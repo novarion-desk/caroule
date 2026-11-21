@@ -9,6 +9,7 @@ Live: https://novarion-desk.github.io/caroule/
 Auf dem Einstellungsbildschirm erstellt «🖨 Arbeitsblatt» aus den gewählten Zeitformen, Übungsarten, Satzarten und der Anzahl (∞ = 20) ein A4-Blatt mit Name/Datum und Schreibplatz. Erst Vorschau, dann Drucken / PDF; «Neu mischen» erzeugt ein anderes Blatt. Das Lösungsblatt ist immer dabei.
 
 ## Versionen
+- 1.2 (21.11.2026): «Zeit wählen» mit über 100 zusätzlichen Kontext-Sätzen (jetzt 140) – `versions/v1.2/`
 - 1.1 (21.11.2026): Arbeitsblatt (Vorschau, Druck/PDF, Lösungen) – `versions/v1.1/`
 - 1.0: erste Version – `versions/v1.0/`
 

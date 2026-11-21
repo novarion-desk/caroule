@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ça roule</title>
+<meta name="theme-color" content="#312E81">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="../../icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Ça roule">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d2433;--muted:#667085;--line:#e4e1d8;--accent:#2f5bea;--ok:#1a8a4a;--okbg:#e7f6ee;--bad:#c93c3c;--badbg:#fdeceb;--warn:#a1650f;--warnbg:#fdf3e1;--r:14px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.logo{font-weight:800;font-size:24px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo span{color:var(--accent)}
+.logo svg{width:30px;height:30px;flex:none}
+button{font:inherit;cursor:pointer}
+.btn-link{background:none;border:0;color:var(--accent);font-weight:600;padding:6px 8px;border-radius:8px}
+.btn-link:hover{background:rgba(47,91,234,.08)}
+.btn-link.sm{font-size:14px;padding:4px 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;color:var(--ink)}
+.chip.on{border-color:var(--c,var(--accent));background:color-mix(in srgb,var(--c,var(--accent)) 13%,#fff)}
+.links{margin-top:8px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.mode{border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px;text-align:left;color:var(--ink)}
+.mode b{display:block;font-size:17px}
+.mode small{color:var(--muted);font-size:14px}
+.mode.on{border-color:var(--accent);background:#eef2fe}
+.opt-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;flex-wrap:wrap}
+.seg{display:flex;border:2px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:#fff;padding:7px 14px;font-weight:600}
+.seg button.on{background:var(--accent);color:#fff}
+.count-in{width:5.5em;border:2px solid var(--line);border-radius:10px;padding:6px 8px;font:inherit;font-weight:600}
+.count-in.on{border-color:var(--accent);background:#eef2fe}
+.switch{position:relative;width:48px;height:28px;border-radius:99px;border:0;background:#cfd4dc;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.switch.on{background:var(--accent)}
+.switch.on::after{left:23px}
+.primary{display:block;width:100%;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:18px;padding:14px;border-radius:12px}
+.primary:hover{filter:brightness(1.07)}
+.primary:disabled{opacity:.5;cursor:default}
+.err{color:var(--bad);font-weight:600;text-align:center;min-height:1.5em}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:700}
+.bar{height:8px;background:#e6e3da;border-radius:99px;overflow:hidden;margin-bottom:14px}
+.bar div{height:100%;background:var(--accent);transition:width .3s}
+.tag{display:inline-block;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.instr{font-weight:700;margin:0 0 14px;font-size:18px}
+.sentence{font-size:22px;line-height:1.9;margin:6px 0 14px}
+.sentence input.tin{font:inherit;font-size:20px;border:0;border-bottom:3px solid var(--accent);background:#f1f4fe;padding:2px 6px;border-radius:6px 6px 0 0;min-width:6ch;max-width:100%;color:var(--ink)}
+.sentence input.tin:focus{outline:none;background:#e6ecfd}
+.blank{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--accent);background:#f1f4fe;border-radius:6px 6px 0 0;text-align:center;color:var(--muted)}
+.hint{color:var(--muted);font-size:18px;white-space:nowrap}
+.tt{display:inline-block;font-size:14px;font-weight:700;padding:2px 10px;border-radius:99px;background:color-mix(in srgb,var(--c) 14%,#fff);color:color-mix(in srgb,var(--c) 80%,#000);border:1px solid color-mix(in srgb,var(--c) 35%,#fff)}
+.src{font-size:21px;background:#f7f6f2;border-left:4px solid var(--line);padding:10px 14px;border-radius:8px;margin-bottom:10px}
+.sig{margin:0 0 12px;color:var(--muted)}
+.sig b{color:var(--ink)}
+textarea.full{width:100%;font:inherit;font-size:20px;border:2px solid var(--line);border-radius:10px;padding:10px 12px;resize:none;min-height:3.2em}
+textarea.full:focus{outline:none;border-color:var(--accent)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts button{border:2px solid var(--line);background:#fff;border-radius:12px;padding:14px 10px;font-weight:700;color:var(--ink)}
+.opts button:hover:not(:disabled){border-color:var(--accent)}
+.opts button.right{border-color:var(--ok);background:var(--okbg)}
+.opts button.wrong{border-color:var(--bad);background:var(--badbg)}
+.opts button:disabled{cursor:default}
+.opts.two button{font-size:22px;padding:18px 10px}
+mark{background:#fff0a8;padding:0 3px;border-radius:4px}
+.fb{border-radius:12px;padding:14px 16px;margin-top:14px;font-size:16px}
+.fb.ok{background:var(--okbg)}.fb.bad{background:var(--badbg)}.fb.warn{background:var(--warnbg)}
+.fbt{font-weight:800;font-size:18px;margin-bottom:4px}
+.fb.ok .fbt{color:var(--ok)}.fb.bad .fbt{color:var(--bad)}.fb.warn .fbt{color:var(--warn)}
+.sol{font-size:18px;margin:6px 0}
+.rule{margin-top:8px}
+.tip{margin-top:8px;font-weight:600}
+.actions{margin-top:16px}
+.big{font-size:56px;font-weight:800;text-align:center;line-height:1.1}
+.big small{display:block;font-size:17px;color:var(--muted);font-weight:600}
+.stat{display:grid;grid-template-columns:170px 1fr 48px;gap:10px;align-items:center;margin:8px 0;font-size:15px}
+.stat .track{height:10px;background:#eee;border-radius:99px;overflow:hidden}
+.stat .track div{height:100%}
+.mist{border-top:1px solid var(--line);padding:10px 0;font-size:16px}
+.mist .you{color:var(--bad)}
+.btns{display:grid;gap:10px}
+.secondary{width:100%;border:2px solid var(--accent);background:#fff;color:var(--accent);font-weight:700;font-size:17px;padding:12px;border-radius:12px}
+.modal{position:fixed;inset:0;background:rgba(20,24,35,.45);display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto;z-index:10}
+.modal.hidden{display:none}
+.modal .card{max-width:720px;width:100%}
+.rt{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.rt p{margin:4px 0}
+.hdr-r{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.fs{border:2px solid var(--line);background:#fff;border-radius:10px;padding:4px 10px;font-weight:800;color:var(--ink);min-width:44px}
+.fs:hover{border-color:var(--accent)}
+.fs:disabled{opacity:.35;cursor:default}
+.name{display:block;width:100%;font:inherit;font-size:22px;font-weight:700;text-align:center;border:0;border-bottom:2px dashed var(--line);padding:6px;margin-bottom:12px;color:var(--ink)}
+.name:focus{outline:none;border-bottom-color:var(--accent)}
+.center{text-align:center}.muted{color:var(--muted)}
+.shot{text-align:center;background:#f1f4fe;border-radius:10px;padding:8px 10px;margin:12px 0 0;font-weight:600}
+details.all summary{cursor:pointer;font-weight:700;padding:2px 0}
+details.all[open] summary{margin-bottom:8px}
+.mist.r-bad{background:var(--badbg);border-radius:8px;padding:10px;margin:6px 0;border:0}
+.mist.r-ok{border-top:1px solid var(--line)}
+.okc{color:var(--ok);font-weight:600}
+.info{background:#f7f6f2;border-radius:10px;padding:12px 14px;margin:10px 0 4px;font-size:15px}
+.info p{margin:4px 0}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:24px}
+.lang{border-width:2px}.lang button{padding:4px 10px;font-size:14px;font-weight:800}
+/* Akzent-Knöpfe */
+.acc{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.acc button{border:2px solid var(--line);background:#fff;border-radius:10px;min-width:42px;padding:6px 8px;font-size:19px;font-weight:700;color:var(--ink)}
+.acc button:hover{border-color:var(--accent);background:#eef2fe}
+.acc small{width:100%;color:var(--muted);font-size:13px}
+/* Tabelle */
+.ctab{display:grid;grid-template-columns:110px 1fr;gap:8px 10px;align-items:center;margin:6px 0 4px}
+.ctab label{font-weight:700;color:var(--muted);text-align:right}
+.ctab input{font:inherit;font-size:19px;border:2px solid var(--line);border-radius:10px;padding:7px 10px;min-width:0;width:100%;color:var(--ink)}
+.ctab input:focus{outline:none;border-color:var(--accent)}
+.ctab input.rok{border-color:var(--ok);background:var(--okbg)}
+.ctab input.rbad{border-color:var(--bad);background:var(--badbg)}
+.trow{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;padding:3px 0;font-size:16px}
+.trow span:first-child{color:var(--muted);text-align:right}
+/* Verbliste */
+.vtools{position:sticky;top:-20px;background:#fff;padding:4px 0 10px;z-index:2;border-bottom:1px solid var(--line);margin-bottom:6px}
+.vsearch{width:100%;font:inherit;font-size:17px;border:2px solid var(--line);border-radius:10px;padding:9px 12px;margin:8px 0}
+.vsearch:focus{outline:none;border-color:var(--accent)}
+.vrow2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.vseg button{padding:5px 12px;font-size:14px}
+.vcount{color:var(--muted);font-size:14px}
+.vt{width:100%;border-collapse:collapse;font-size:16px}
+.vt th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 8px;border-bottom:2px solid var(--line)}
+.vt td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.vt tr.vr{cursor:pointer}
+.vt tr.vr:hover td{background:#f1f4fe}
+.vt td.b{font-weight:800}
+.vt td.de{color:var(--muted);font-size:15px}
+.vt td.f{color:#1d3fb3;font-weight:600}
+.vtag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px;white-space:nowrap;background:#eef0f3;color:#5b6475}
+.vtag.e{background:var(--warnbg);color:var(--warn)}
+.vr2{border-bottom:1px solid var(--line);padding:9px 6px;cursor:pointer;border-radius:8px}
+.vr2:hover{background:#f1f4fe}
+.vr2 .vh b{font-size:18px}
+.vr2 .vh .muted{font-size:14px;margin-left:4px}
+.vr2 .vf{color:#1d3fb3;font-weight:600;margin-top:2px}
+.vr2 .vf2{color:#1d3fb3;font-size:15px;margin-top:1px}
+.vr2 .lb{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:10px}
+.vgrid .rt{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.vt mark{padding:0 1px}
+@media (max-width:560px){.vt thead th:nth-child(3){display:none}.vt td.de{font-size:14px}}
+@media (max-width:520px){.sentence{font-size:19px}.opts{grid-template-columns:1fr}.opts.two{grid-template-columns:1fr 1fr}.stat{grid-template-columns:120px 1fr 40px}.ctab,.trow{grid-template-columns:84px 1fr}}
+
+/* ---- Arbeitsblatt (Vorschau + Druck) ---- */
+.sheetbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sheetbar button{flex:1;min-width:130px}
+.sheetbar .primary{width:auto;font-size:16px;padding:10px 14px}
+.secondary{display:block;width:100%;border:2px solid var(--line);background:#fff;color:var(--ink);font-weight:700;font-size:16px;padding:12px;border-radius:12px}
+.sheetbar .secondary{width:auto;padding:10px 14px}
+.sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin-bottom:16px;color:#111;font-size:15px;line-height:1.45}
+.sheet h1{font-size:1.3em;margin:0 0 2px}
+.sheet .sub{color:#555;font-size:.9em;margin:0 0 10px}
+.sheet .meta{display:flex;gap:24px;margin:10px 0 16px}
+.sheet .meta span{flex:1;border-bottom:1px solid #333;padding-bottom:2px;font-size:.9em;color:#444}
+.sheet .t{break-inside:avoid;margin:0 0 14px}
+.sheet .t .n{font-weight:700;margin-right:6px}
+.sheet .t .ins{font-size:.82em;color:#555;margin-bottom:2px}
+.sheet .blank{display:inline-block;border-bottom:1.5px solid #222;height:1.05em;vertical-align:baseline}
+.sheet .wl{border-bottom:1px solid #999;height:1.9em}
+.sheet .opt{display:inline-block;margin-right:14px;white-space:nowrap}
+.sheet .box{display:inline-block;width:.8em;height:.8em;border:1.5px solid #222;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.sheet .hint{color:#555}
+.sheet .tg{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 24px;margin-top:4px}
+.sheet .tg div{display:flex;gap:6px;align-items:flex-end}
+.sheet .tg i{font-style:normal;white-space:nowrap}
+.sheet .tg b{flex:1;border-bottom:1px solid #999;height:1.6em}
+.sheet .sol-list div{break-inside:avoid;margin:0 0 5px}
+@media print{
+ @page{size:A4;margin:14mm}
+ body{background:#fff;font-size:12pt}
+ header,footer,.sheetbar,.modal{display:none!important}
+ .wrap{max-width:none;padding:0}
+ .sheet{border:0;border-radius:0;padding:0;margin:0;font-size:12pt}
+ .sheet.sol{break-before:page}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#312E81"/><path d="M12 14h40a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H30l-10 9v-9h-8a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4z" fill="#fff"/><text x="32" y="38" font-size="26" font-weight="800" text-anchor="middle" fill="#2f5bea" font-family="Arial,sans-serif">é</text></svg><div>Ça <span>roule</span></div></div>
+    <div class="hdr-r">
+      <div class="seg lang" id="langSeg" role="group" aria-label="Langue / Sprache"><button data-l="de">DE</button><button data-l="fr">FR</button></div>
+      <button class="fs" id="fsMinus" aria-label="A−">A−</button>
+      <button class="fs" id="fsPlus" aria-label="A+">A+</button>
+      <button class="btn-link" id="rulesBtn">📘 Regeln</button>
+      <button class="btn-link" id="verbsBtn">📋 Verben</button>
+      <button class="btn-link" id="feedbackBtn" onclick="openAppFeedback()">💬 Feedback</button>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer id="foot">Ça roule</footer>
+</div>
+<div class="modal hidden" id="modal"><div class="card" id="modalBody"></div></div>
+
+<script>
+/* Ça roule v1.2 – französische Zeitformen üben (Oberstufe, A1–B1) */
+let LANG='de';try{const l=localStorage.getItem('cr-lang');if(l==='de'||l==='fr')LANG=l}catch(e){}
+const L=(de,fr)=>LANG==='fr'?fr:de;
+const X=o=>LANG==='fr'?o.fr:o.de;
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cap=s=>s?s[0].toUpperCase()+s.slice(1):s;
+const vowel=w=>/^[aeiouyhàâäéèêëîïôöùûüœ]/i.test(w||'');
+const whyT=w=>w.split('|')[LANG==='fr'?1:0]||w;
+
+/* ===== Zeitformen ===== */
+const ORDER=['PR','PC','IMP','FC','FS','IMT','CO'];
+const T={
+ PR:{name:'Présent',c:'#2f5bea',
+  use:{de:'Gewohnheiten, Zustände und das, was gerade jetzt passiert',fr:'habitudes, états et ce qui se passe en ce moment'},
+  form:{de:'<b>-er-Verben:</b> Stamm + <b>-e, -es, -e, -ons, -ez, -ent</b>. Viele wichtige Verben sind unregelmässig (avoir, être, aller, faire, prendre …)',fr:'<b>verbes en -er :</b> radical + <b>-e, -es, -e, -ons, -ez, -ent</b>. Beaucoup de verbes importants sont irréguliers (avoir, être, aller, faire, prendre …)'},
+  ex:'Elle mange une pizza chaque jour.'},
+ PC:{name:'Passé composé',c:'#d9480f',
+  use:{de:'abgeschlossene Handlung in der Vergangenheit (einmalig, nacheinander)',fr:'action terminée dans le passé (ponctuelle, qui s’enchaîne)'},
+  form:{de:'<b>avoir</b> oder <b>être</b> (Présent) + <b>participe passé</b>. Mit <b>être</b>: aller, venir, arriver, partir, sortir, entrer, rentrer, rester, tomber, monter, descendre, devenir und <b>alle reflexiven Verben</b>. Bei être passt sich das Partizip dem Subjekt an (allé, allée, allés, allées)',fr:'<b>avoir</b> ou <b>être</b> (présent) + <b>participe passé</b>. Avec <b>être</b> : aller, venir, arriver, partir, sortir, entrer, rentrer, rester, tomber, monter, descendre, devenir et <b>tous les verbes pronominaux</b>. Avec être, le participe s’accorde avec le sujet (allé, allée, allés, allées)'},
+  ex:'Hier, nous avons mangé une pizza. Elle est allée au cinéma.'},
+ IMP:{name:'Imparfait',c:'#7b3fe4',
+  use:{de:'Gewohnheiten, Beschreibungen und laufende Handlungen in der Vergangenheit',fr:'habitudes, descriptions et actions en cours dans le passé'},
+  form:{de:'<b>nous</b>-Form des Présent ohne <b>-ons</b> + <b>-ais, -ais, -ait, -ions, -iez, -aient</b> (nous mangeons → je mangeais). Sonderfall: être → j’<b>ét</b>ais',fr:'forme <b>nous</b> du présent sans <b>-ons</b> + <b>-ais, -ais, -ait, -ions, -iez, -aient</b> (nous mangeons → je mangeais). Cas particulier : être → j’<b>ét</b>ais'},
+  ex:'Autrefois, il mangeait une pizza chaque dimanche.'},
+ FC:{name:'Futur composé',c:'#0b8f6a',
+  use:{de:'nahe, geplante Zukunft («ich werde gleich …»)',fr:'futur proche, projets («je vais …»)'},
+  form:{de:'<b>aller</b> (Présent) + <b>Infinitiv</b>: je vais manger, tu vas manger, il va manger …',fr:'<b>aller</b> (présent) + <b>infinitif</b> : je vais manger, tu vas manger, il va manger …'},
+  ex:'Demain, je vais manger une pizza.'},
+ FS:{name:'Futur simple',c:'#0891b2',
+  use:{de:'ferne oder sichere Zukunft, Vorhersagen, Versprechen',fr:'futur lointain ou certain, prédictions, promesses'},
+  form:{de:'<b>Infinitiv</b> (bei -re ohne e) + <b>-ai, -as, -a, -ons, -ez, -ont</b>. Unregelmässige Stämme: <b>aur-, ser-, ir-, fer-, viendr-, verr-, pourr-, voudr-, devr-, saur-, enverr-, courr-</b>',fr:'<b>infinitif</b> (sans e pour -re) + <b>-ai, -as, -a, -ons, -ez, -ont</b>. Radicaux irréguliers : <b>aur-, ser-, ir-, fer-, viendr-, verr-, pourr-, voudr-, devr-, saur-, enverr-, courr-</b>'},
+  ex:'Un jour, nous habiterons à Paris.'},
+ IMT:{name:'Impératif',c:'#c2255c',
+  use:{de:'Befehl, Rat, Aufforderung (nur <b>tu, nous, vous</b>, ohne Pronomen)',fr:'ordre, conseil, invitation (seulement <b>tu, nous, vous</b>, sans pronom)'},
+  form:{de:'Présent-Form ohne Pronomen. Bei -er-Verben (und aller, ouvrir) hat <b>tu</b> <b>kein -s</b>: Mange ! Reflexiv: Lève-toi ! Verneint: <b>Ne</b> te lève <b>pas</b> !',fr:'forme du présent sans pronom. Pour les verbes en -er (et aller, ouvrir), <b>tu</b> perd son <b>-s</b> : Mange ! Pronominal : Lève-toi ! Négatif : <b>Ne</b> te lève <b>pas</b> !'},
+  ex:'Mange une pomme ! Ne mange pas de bonbons !'},
+ CO:{name:'Conditionnel',c:'#a16207',
+  use:{de:'höfliche Bitte, Wunsch, Rat und unwirkliche Bedingung (si + Imparfait)',fr:'demande polie, souhait, conseil et condition irréelle (si + imparfait)'},
+  form:{de:'<b>Futur-Stamm</b> + Endungen des Imparfait: <b>-ais, -ais, -ait, -ions, -iez, -aient</b> (je mangerais, nous irions). Nach <b>si</b> steht der Imparfait, nie das Conditionnel',fr:'<b>radical du futur</b> + terminaisons de l’imparfait : <b>-ais, -ais, -ait, -ions, -iez, -aient</b> (je mangerais, nous irions). Après <b>si</b> : imparfait, jamais le conditionnel'},
+  ex:'Si j’avais faim, je mangerais une pizza.'}
+};
+const NEG={de:'<b>Verneinung:</b> <b>ne … pas</b> steht um das konjugierte Verb (beim passé composé um das Hilfsverb, beim futur composé um aller): Il ne mange pas. Il n’a pas mangé. Vor Vokal: <b>n’</b>. Nach <b>pas</b> werden un / une / des / du zu <b>de</b> (d’): Il ne mange pas de pizza.',fr:'<b>Négation :</b> <b>ne … pas</b> entoure le verbe conjugué (au passé composé : l’auxiliaire ; au futur composé : aller) : Il ne mange pas. Il n’a pas mangé. Devant une voyelle : <b>n’</b>. Après <b>pas</b>, un / une / des / du deviennent <b>de</b> (d’) : Il ne mange pas de pizza.'};
+const QQ={de:'<b>Frage:</b> <b>Est-ce que</b> (vor Vokal <b>est-ce qu’</b>) + Aussagesatz. Oder Inversion: Verb–Pronomen (Manges-tu ? A-t-il mangé ?)',fr:'<b>Question :</b> <b>Est-ce que</b> (devant une voyelle <b>est-ce qu’</b>) + phrase. Ou inversion : verbe–pronom (Manges-tu ? A-t-il mangé ?)'};
+
+/* Signalwörter / Satzrahmen pro Zeitform (p: Standardposition, both:false = nur diese Position) */
+const MK={
+ PR:[{w:'chaque jour'},{w:"d'habitude",p:'pre'},{w:'en ce moment'},{w:'tous les matins'},{w:'maintenant'},{w:'le lundi'}],
+ PC:[{w:'hier'},{w:'hier soir'},{w:'la semaine dernière'},{w:'samedi dernier'},{w:'il y a trois jours',p:'pre'},{w:'ce matin'}],
+ IMP:[{w:'autrefois',p:'pre'},{w:'à cette époque-là',p:'pre'},{w:'chaque été'},{w:'tous les dimanches'},{w:'pendant les vacances'},{w:"quand j'étais petit",p:'pre',both:false}],
+ FC:[{w:'demain'},{w:'ce soir'},{w:'dans cinq minutes'},{w:"tout à l'heure"},{w:'cet après-midi'}],
+ FS:[{w:"l'année prochaine",p:'pre'},{w:'dans dix ans',p:'pre'},{w:'un jour',p:'pre'},{w:'plus tard',p:'pre'},{w:"à l'avenir",p:'pre'}],
+ IMT:[],
+ CO:[{w:"si j'avais le temps",p:'pre',both:false},{w:"avec plus d'argent",p:'pre',both:false},{w:'si le temps était beau',p:'pre',both:false},{w:'à ta place',p:'pre',both:false,s:['je']}]
+};
+function pickMk(t,S){const l=(MK[t]||[]).filter(m=>!m.s||m.s.includes(S.k));return l.length?rnd(l):null}
+
+/* ===== Personen ===== */
+const SUBJ=[
+ {k:'je',t:'je',p:0,g:'x',n:'s',pr:1},{k:'tu',t:'tu',p:1,g:'x',n:'s',pr:1},
+ {k:'il',t:'il',p:2,g:'m',n:'s',pr:1},{k:'elle',t:'elle',p:2,g:'f',n:'s',pr:1},{k:'on',t:'on',p:2,g:'x',n:'s',pr:1},
+ {k:'nous',t:'nous',p:3,g:'x',n:'p',pr:1},{k:'vous',t:'vous',p:4,g:'x',n:'p',pr:1},
+ {k:'ils',t:'ils',p:5,g:'m',n:'p',pr:1},{k:'elles',t:'elles',p:5,g:'f',n:'p',pr:1},
+ {k:'lea',t:'Léa',p:2,g:'f',n:'s'},{k:'tom',t:'Tom',p:2,g:'m',n:'s'},{k:'sara',t:'Sara',p:2,g:'f',n:'s'},{k:'lucas',t:'Lucas',p:2,g:'m',n:'s'},
+ {k:'frere',t:'mon frère',p:2,g:'m',n:'s'},{k:'soeur',t:'ma sœur',p:2,g:'f',n:'s'},
+ {k:'parents',t:'mes parents',p:5,g:'m',n:'p'},{k:'amies',t:'mes amies',p:5,g:'f',n:'p'},{k:'eleves',t:'les élèves',p:5,g:'m',n:'p'}
+];
+const SBY=Object.fromEntries(SUBJ.map(s=>[s.k,s]));
+function pickSubj(t){
+ if(t==='IMT')return SBY[rnd(['tu','nous','vous'])];
+ return Math.random()<.65?rnd(SUBJ.filter(s=>s.pr)):rnd(SUBJ.filter(s=>!s.pr));
+}
+function agrs(S){
+ if(S.k==='on')return [['m','s'],['f','s'],['m','p'],['f','p']];
+ if(S.k==='vous')return [['m','p'],['f','p'],['m','s'],['f','s']];
+ if(S.g==='x')return [['m',S.n],['f',S.n]];
+ return [[S.g,S.n]];
+}
+const AV=['ai','as','a','avons','avez','ont'],ET=['suis','es','est','sommes','êtes','sont'],ALLER=['vais','vas','va','allons','allez','vont'];
+const FE=['ai','as','a','ons','ez','ont'],CE=['ais','ais','ait','ions','iez','aient'],IE=['ais','ais','ait','ions','iez','aient'];
+const REFL=['me','te','se','nous','vous','se'];
+const IMP_ENC={1:'-toi',3:'-nous',4:'-vous'};
+
+/* ===== Verben =====
+ Format: Infinitiv|Deutsch|Hilfsverb|Partizip|Présent (6)|Imparfait-Stamm|Futur-Stamm|Flags|Niveau|Ergänzungen (~ = nach Verneinung)
+ Flags: e = tu-Imperativ ohne -s · g/c = -ger/-cer · r = reflexiv · x = kein Imperativ · z = Imperativ nicht in Sätzen · n = Imperativ nur verneint · i:a:b:c = Imperativ-Sonderformen */
+const VD=`être|sein|A|été|suis es est sommes êtes sont|ét|ser|i:sois:soyons:soyez,z|1|à la maison;en retard;à l'école;en vacances;à Paris;chez le médecin
+avoir|haben|A|eu|ai as a avons avez ont|av|aur|i:aie:ayons:ayez,z|1|un chat~de chat;deux frères~de frères;mal à la tête;faim;un vélo~de vélo
+aller|gehen, fahren|E|allé|vais vas va allons allez vont|all|ir|e|1|à l'école;au cinéma;à la piscine;chez le médecin;en ville;à Paris
+faire|machen, tun|A|fait|fais fais fait faisons faites font|fais|fer||1|les devoirs;du sport~de sport;une promenade~de promenade;la cuisine;des courses~de courses
+dire|sagen|A|dit|dis dis dit disons dites disent|dis|dir||1|la vérité;bonjour à tout le monde;un secret~de secret
+voir|sehen|A|vu|vois vois voit voyons voyez voient|voy|verr|z|1|un film~de film;des amis~d'amis;la mer;le match
+venir|kommen|E|venu|viens viens vient venons venez viennent|ven|viendr||1|chez nous;à la fête;avec nous;à pied
+prendre|nehmen|A|pris|prends prends prend prenons prenez prennent|pren|prendr||1|le bus;un café~de café;le train;une photo~de photo
+mettre|legen, stellen, anziehen|A|mis|mets mets met mettons mettez mettent|mett|mettr||2|la table;un pull~de pull;de la musique~de musique
+pouvoir|können|A|pu|peux peux peut pouvons pouvez peuvent|pouv|pourr|x|1|venir avec nous;nous aider;rester ici;ouvrir la fenêtre
+vouloir|wollen|A|voulu|veux veux veut voulons voulez veulent|voul|voudr|x|1|une glace~de glace;partir;un nouveau vélo~de nouveau vélo;jouer dehors
+devoir|müssen|A|dû|dois dois doit devons devez doivent|dev|devr|x|2|partir;travailler;ranger la chambre;rester à la maison
+savoir|wissen, können|A|su|sais sais sait savons savez savent|sav|saur|i:sache:sachons:sachez,z|2|nager;la réponse;jouer du piano;le chemin
+lire|lesen|A|lu|lis lis lit lisons lisez lisent|lis|lir||1|un livre~de livre;le journal;une BD~de BD;un message~de message
+écrire|schreiben|A|écrit|écris écris écrit écrivons écrivez écrivent|écriv|écrir||2|une lettre~de lettre;un message~de message;un mail~de mail
+boire|trinken|A|bu|bois bois boit buvons buvez boivent|buv|boir||2|de l'eau~d'eau;un thé~de thé;du lait~de lait;un jus d'orange~de jus d'orange
+manger|essen|A|mangé|mange manges mange mangeons mangez mangent|mang|manger|e,g|1|une pizza~de pizza;des pâtes~de pâtes;une pomme~de pomme;du pain~de pain
+parler|sprechen|A|parlé|parle parles parle parlons parlez parlent|parl|parler|e|1|français;avec le prof;au téléphone;trop vite
+aimer|mögen, lieben|A|aimé|aime aimes aime aimons aimez aiment|aim|aimer|e|1|le chocolat;la musique;le sport;les animaux
+jouer|spielen|A|joué|joue joues joue jouons jouez jouent|jou|jouer|e|1|au foot;du piano;aux cartes;dehors
+regarder|anschauen|A|regardé|regarde regardes regarde regardons regardez regardent|regard|regarder|e|1|la télé;un film~de film;une série~de série;le match
+écouter|zuhören, hören|A|écouté|écoute écoutes écoute écoutons écoutez écoutent|écout|écouter|e|1|de la musique~de musique;le prof;la radio;un podcast~de podcast
+habiter|wohnen|A|habité|habite habites habite habitons habitez habitent|habit|habiter|e|1|à Zurich;à la campagne;dans une grande maison;près de la gare
+travailler|arbeiten|A|travaillé|travaille travailles travaille travaillons travaillez travaillent|travaill|travailler|e|1|dans un café;beaucoup;à la maison;dans une banque
+étudier|lernen, studieren|A|étudié|étudie étudies étudie étudions étudiez étudient|étudi|étudier|e|2|le français;l'histoire;la géographie;pour l'examen
+acheter|kaufen|A|acheté|achète achètes achète achetons achetez achètent|achet|achèter|e|1|du pain~de pain;un cadeau~de cadeau;des chaussures~de chaussures;une glace~de glace
+appeler|rufen, anrufen|A|appelé|appelle appelles appelle appelons appelez appellent|appel|appeller|e|2|un taxi~de taxi;le médecin;la police;des amis~d'amis
+préférer|vorziehen, lieber mögen|A|préféré|préfère préfères préfère préférons préférez préfèrent|préfér|préférer|e|2|le thé;rester ici;la montagne;le chocolat noir
+commencer|beginnen|A|commencé|commence commences commence commençons commencez commencent|commenc|commencer|e,c|2|un nouveau livre~de nouveau livre;à travailler;le cours;un projet~de projet
+envoyer|schicken|A|envoyé|envoie envoies envoie envoyons envoyez envoient|envoy|enverr|e|2|un message~de message;une carte postale~de carte postale;un mail~de mail;un colis~de colis
+finir|beenden, fertig werden|A|fini|finis finis finit finissons finissez finissent|finiss|finir||1|les devoirs;le travail;le repas;le livre
+choisir|wählen|A|choisi|choisis choisis choisit choisissons choisissez choisissent|choisiss|choisir||1|un livre~de livre;un dessert~de dessert;une couleur~de couleur;un film~de film
+attendre|warten|A|attendu|attends attends attend attendons attendez attendent|attend|attendr||1|le bus;des amis~d'amis;la réponse;le train
+répondre|antworten|A|répondu|réponds réponds répond répondons répondez répondent|répond|répondr||1|à la question;au prof;à ce message;à la lettre
+vendre|verkaufen|A|vendu|vends vends vend vendons vendez vendent|vend|vendr||2|la vieille voiture;des livres~de livres;le vélo;des gâteaux~de gâteaux
+perdre|verlieren|A|perdu|perds perds perd perdons perdez perdent|perd|perdr|n|2|les clés;le match;le portable;du temps~de temps
+arriver|ankommen|E|arrivé|arrive arrives arrive arrivons arrivez arrivent|arriv|arriver|e|1|à la gare;en retard;à huit heures;à l'école
+partir|wegfahren, abreisen|E|parti|pars pars part partons partez partent|part|partir||1|en vacances;à sept heures;avec des amis;pour Paris
+sortir|hinausgehen, ausgehen|E|sorti|sors sors sort sortons sortez sortent|sort|sortir||1|avec des amis;de la maison;de la classe;du magasin
+entrer|eintreten|E|entré|entre entres entre entrons entrez entrent|entr|entrer|e|1|dans la classe;dans le magasin;dans la cuisine;par la porte
+rentrer|heimkehren|E|rentré|rentre rentres rentre rentrons rentrez rentrent|rentr|rentrer|e|1|à la maison;chez nous;tard;en bus
+rester|bleiben|E|resté|reste restes reste restons restez restent|rest|rester|e|1|à la maison;au lit;ici;à l'école
+tomber|fallen|E|tombé|tombe tombes tombe tombons tombez tombent|tomb|tomber|e,n|2|dans l'escalier;de vélo;par terre;dans l'eau
+devenir|werden|E|devenu|deviens deviens devient devenons devenez deviennent|deven|deviendr|z|2|professeur;médecin;célèbre;ingénieur
+monter|hinaufsteigen, einsteigen|E|monté|monte montes monte montons montez montent|mont|monter|e|2|dans le bus;au premier étage;sur la colline;dans le train
+descendre|hinuntergehen, aussteigen|E|descendu|descends descends descend descendons descendez descendent|descend|descendr||2|du train;à la cave;de la voiture;du bus
+ouvrir|öffnen|A|ouvert|ouvre ouvres ouvre ouvrons ouvrez ouvrent|ouvr|ouvrir|e|1|la porte;la fenêtre;un livre~de livre;le cahier
+connaître|kennen|A|connu|connais connais connaît connaissons connaissez connaissent|connaiss|connaîtr|z|2|ce garçon;Paris;la réponse;cette chanson
+comprendre|verstehen|A|compris|comprends comprends comprend comprenons comprenez comprennent|compren|comprendr||1|la leçon;la question;le texte;l'exercice
+apprendre|lernen|A|appris|apprends apprends apprend apprenons apprenez apprennent|appren|apprendr||1|le français;les verbes;une chanson~de chanson;un poème~de poème
+dormir|schlafen|A|dormi|dors dors dort dormons dormez dorment|dorm|dormir||1|bien;huit heures;tard;chez des amis
+courir|rennen, laufen|A|couru|cours cours court courons courez courent|cour|courr||2|dans le parc;très vite;au bord du lac;avec le chien
+trouver|finden|A|trouvé|trouve trouves trouve trouvons trouvez trouvent|trouv|trouver|e|1|une solution~de solution;les clés;un bon restaurant~de bon restaurant;le chemin
+donner|geben|A|donné|donne donnes donne donnons donnez donnent|donn|donner|e|1|un cadeau à Léa~de cadeau à Léa;un conseil~de conseil;le numéro;de l'argent~d'argent
+demander|fragen, bitten um|A|demandé|demande demandes demande demandons demandez demandent|demand|demander|e|1|le chemin;de l'aide~d'aide;l'heure;un conseil~de conseil
+visiter|besichtigen, besuchen|A|visité|visite visites visite visitons visitez visitent|visit|visiter|e|1|un musée~de musée;la ville;le château;une exposition~d'exposition
+voyager|reisen|A|voyagé|voyage voyages voyage voyageons voyagez voyagent|voyag|voyager|e,g|1|en train;en Italie;en avion;avec la famille
+nager|schwimmen|A|nagé|nage nages nage nageons nagez nagent|nag|nager|e,g|1|dans le lac;à la piscine;dans la mer;avec des amis
+cuisiner|kochen|A|cuisiné|cuisine cuisines cuisine cuisinons cuisinez cuisinent|cuisin|cuisiner|e|1|des pâtes~de pâtes;pour la famille;un gâteau~de gâteau;le dîner
+porter|tragen|A|porté|porte portes porte portons portez portent|port|porter|e|2|un pull~de pull;des lunettes~de lunettes;une casquette~de casquette;un chapeau~de chapeau
+chanter|singen|A|chanté|chante chantes chante chantons chantez chantent|chant|chanter|e|1|une chanson~de chanson;dans la chorale;très bien;sous la douche
+lever|aufstehen|E|levé|lève lèves lève levons levez lèvent|lev|lèver|e,r|1|tôt;à sept heures;vite;tard
+laver|sich waschen|E|lavé|lave laves lave lavons lavez lavent|lav|laver|e,r|1|vite;dans la salle de bains;avec du savon;à l'eau froide
+coucher|ins Bett gehen|E|couché|couche couches couche couchons couchez couchent|couch|coucher|e,r|1|tôt;tard;à dix heures;après le film
+habiller|sich anziehen|E|habillé|habille habilles habille habillons habillez habillent|habill|habiller|e,r|1|vite;chaudement;pour l'école;en noir
+réveiller|aufwachen|E|réveillé|réveille réveilles réveille réveillons réveillez réveillent|réveill|réveiller|e,r|2|à six heures;tôt;tard;en retard
+dépêcher|sich beeilen|E|dépêché|dépêche dépêches dépêche dépêchons dépêchez dépêchent|dépêch|dépêcher|e,r|2|beaucoup;un peu;pour arriver à l'heure;à la gare
+amuser|sich amüsieren|E|amusé|amuse amuses amuse amusons amusez amusent|amus|amuser|e,r|2|bien;beaucoup;au parc;avec des amis
+promener|spazieren gehen|E|promené|promène promènes promène promenons promenez promènent|promen|promèner|e,r|2|dans le parc;au bord du lac;en forêt;avec le chien`;
+const VERBS=VD.trim().split('\n').map(line=>{
+ const f=line.split('|');
+ const flags=(f[7]||'').split(',').filter(Boolean);
+ const o={inf:f[0],de:f[1],aux:f[2],pp:f[3],pr:f[4].split(' '),imp:f[5],fut:f[6],lv:+f[8],objs:f[9].split(';').map(s=>{const a=s.split('~');return {p:a[0],n:a[1]||a[0]}}),flags};
+ o.r=flags.includes('r');o.e=flags.includes('e');o.g=flags.includes('g');o.c=flags.includes('c');o.x=flags.includes('x');o.z=flags.includes('z');o.n=flags.includes('n');
+ const ov=flags.find(x=>x.startsWith('i:'));o.ov=ov?ov.slice(2).split(':'):null;
+ o.disp=o.r?(vowel(o.inf)?"s'":'se ')+o.inf:o.inf;
+ o.im=o.x?null:(o.ov||[o.e?o.pr[1].replace(/s$/,''):o.pr[1],o.pr[3],o.pr[4]]);
+ return o;
+});
+const VBY=Object.fromEntries(VERBS.map(v=>[v.inf,v]));
+const OB=s=>{const a=s.split('~');return {p:a[0],n:a[1]||a[0]}};
+
+/* ===== Konjugations-Motor ===== */
+function ppAgr(v,a){return v.pp+(v.aux==='E'?((a[0]==='f'?'e':'')+(a[1]==='p'?'s':'')):'')}
+function impf(v,p){
+ let st=v.imp;
+ if(p!==3&&p!==4){if(v.g)st+='e';if(v.c)st=st.replace(/c$/,'ç')}
+ return st+IE[p];
+}
+function parts(v,t,p,a){
+ let fin,rest='',rf='',rf2='';
+ if(t==='PR')fin=v.pr[p];
+ else if(t==='IMP')fin=impf(v,p);
+ else if(t==='FS')fin=v.fut+FE[p];
+ else if(t==='CO')fin=v.fut+CE[p];
+ else if(t==='PC'){fin=(v.aux==='A'?AV:ET)[p];rest=ppAgr(v,a)}
+ else if(t==='FC'){fin=ALLER[p];rest=v.inf}
+ if(v.r){if(t==='FC')rf2=REFL[p];else rf=REFL[p]}
+ return {fin,rest,rf,rf2};
+}
+function joinToks(toks){
+ let s='';
+ for(let i=0;i<toks.length;i++){
+  const t=toks[i],n=toks[i+1];
+  if(n!==undefined&&['ne','me','te','se'].includes(t)&&vowel(n))s+=t[0]+"'";
+  else s+=t+(n!==undefined?' ':'');
+ }
+ return s;
+}
+function strGrp(P,neg){
+ const k=[];
+ if(neg)k.push('ne');
+ if(P.rf)k.push(P.rf);
+ k.push(P.fin);
+ if(neg)k.push('pas');
+ if(P.rf2)k.push(P.rf2);
+ if(P.rest)k.push(P.rest);
+ return joinToks(k);
+}
+function impGrp(v,S,neg){
+ const f=v.im[{1:0,3:1,4:2}[S.p]];
+ if(!neg)return v.r?f+IMP_ENC[S.p]:f;
+ const k=['ne'];if(v.r)k.push(REFL[S.p]);k.push(f,'pas');
+ return joinToks(k);
+}
+function grpVariants(v,t,neg,S){
+ if(t==='IMT')return [impGrp(v,S,neg)];
+ const out=[];
+ for(const a of agrs(S)){const s=strGrp(parts(v,t,S.p,a),neg);if(!out.includes(s))out.push(s)}
+ return out;
+}
+const subjLead=(S,g)=>(S.k==='je'&&vowel(g))?"j'":S.t+' ';
+
+/* Satz zusammensetzen: gibt {before,gap,after} */
+function compose(o,g,pos,style){
+ const S=o.S,neg=o.form==='neg',ob=o.ob?(neg?o.ob.n:o.ob.p):'',mk=o.mk;
+ let pre='',post='';
+ if(mk&&pos==='pre')pre=mk.w+(mk.sep!==undefined?mk.sep:', ');
+ if(mk&&pos==='post')post=(mk.sepPost!==undefined?mk.sepPost:' ')+mk.w;
+ let lead='';
+ if(o.t!=='IMT'&&style!=='inv'){
+  if(o.form==='q'){const sj=subjLead(S,g);lead=(vowel(sj)?"est-ce qu'":'est-ce que ')+sj}
+  else lead=subjLead(S,g);
+ }
+ let before=pre+lead,gap=g;
+ const punct=o.t==='IMT'?' !':(o.form==='q'?' ?':'.');
+ const after=(ob?' '+ob:'')+post+punct;
+ if(before)before=cap(before);else gap=cap(gap);
+ return {before,gap,after};
+}
+const posList=o=>o.mk?(o.mk.both===false?[o.mk.p||'post']:['pre','post']):[null];
+function build(o){
+ const neg=o.form==='neg';
+ const vars=grpVariants(o.v,o.t,neg,o.S);
+ const pos=o.mk?(o.mk.p||'post'):null;
+ const P=compose(o,vars[0],pos);
+ return Object.assign({},o,{before:P.before,gap:P.gap,after:P.after,alt:vars.slice(1),vars,sentence:P.before+P.gap+P.after});
+}
+function variantsOf(it){
+ const out=new Set();
+ for(const g of it.vars)for(const p of posList(it)){const P=compose(it,g,p);out.add(P.before+P.gap+P.after)}
+ if(it.form==='q'&&it.t!=='IMT'&&it.S.pr&&it.S.k!=='je'&&!it.v.r){
+  for(const a of agrs(it.S)){
+   const P=parts(it.v,it.t,it.S.p,a);
+   const core=P.fin+((it.S.p===2&&/[ae]$/.test(P.fin))?'-t-':'-')+it.S.t+(P.rest?' '+P.rest:'');
+   for(const p of posList(it)){const Q=compose(it,core,p,'inv');out.add(Q.before+Q.gap+Q.after)}
+  }
+ }
+ return [...out];
+}
+function softOf(it){
+ const o=Object.assign({},it,{form:'pos'}),out=new Set();
+ for(const g of grpVariants(o.v,o.t,false,o.S))for(const p of posList(o)){const P=compose(o,g,p);out.add(P.before+P.gap+P.after)}
+ return [...out];
+}
+
+/* ===== Prüfen ===== */
+function nrm(s){
+ s=String(s).toLowerCase().replace(/[’‘`´]/g,"'").replace(/[  ]/g,' ').replace(/-/g,' ').replace(/[.,!?;:«»"“”()…]/g,' ');
+ s=s.replace(/[àâä]/g,'a').replace(/[êë]/g,'e').replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ùûü]/g,'u').replace(/ç/g,'c').replace(/œ/g,'oe').replace(/æ/g,'ae');
+ return s.replace(/\s+/g,' ').trim();
+}
+const stripAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'');
+const eq=(a,b)=>nrm(a)===nrm(b);
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function nearInfo(val,cands){
+ const u=nrm(val);let acc=false,near=false;
+ for(const c of cands){const n=nrm(c);if(stripAcc(u)===stripAcc(n)){acc=true;near=true}else if(lev(u,n)<=1)near=true}
+ return {acc,near};
+}
+
+/* ===== Aufgaben erzeugen ===== */
+const lvPool=()=>VERBS.filter(v=>v.lv<=(S.lvl==='A'?2:1));
+function pool(){
+ let p=lvPool();
+ if(S.vset==='ae')p=p.filter(v=>v.inf==='avoir'||v.inf==='être');
+ else if(S.vset==='etre')p=p.filter(v=>v.aux==='E');
+ else if(S.vset==='refl')p=p.filter(v=>v.r);
+ return p.length?p:lvPool();
+}
+function poolFor(t,form){
+ let p=pool();
+ if(t==='IMT'){
+  const f=v=>v.im&&!v.z&&(form==='neg'||!v.n);
+  p=p.filter(f);if(!p.length)p=lvPool().filter(f);
+ }
+ return p;
+}
+function baseObj(t,form){
+ if(t==='IMT'&&form==='q')form='pos';
+ const v=rnd(poolFor(t,form));
+ if(t==='IMT'&&v.n)form='neg';
+ const S0=pickSubj(t);
+ return {t,form,S:S0,v,ob:rnd(v.objs),mk:pickMk(t,S0)};
+}
+function genItem(t,form){return build(baseObj(t,form))}
+
+const CTX=[
+ {t:'PR',s:'lea',v:'travailler',ob:'dans un café',mk:{w:'en ce moment',p:'pre'},w:'en ce moment → gerade jetzt|en ce moment → maintenant'},
+ {t:'PR',s:'nous',v:'aller',ob:"à l'école",mk:{w:'tous les matins'},w:'tous les matins → Gewohnheit|tous les matins → habitude'},
+ {t:'PR',s:'je',v:'aimer',ob:'le chocolat',mk:{w:'en général',p:'pre'},w:'aimer: Vorliebe, Zustand → Présent|aimer : goût, état → présent'},
+ {t:'PR',s:'tu',v:'attendre',ob:'le bus',mk:{w:"aujourd'hui",p:'pre'},w:"aujourd'hui → jetzt / heute|aujourd'hui → maintenant"},
+ {t:'PR',s:'elle',v:'manger',ob:'de la viande~de viande',f:'neg',mk:{w:'Léa est végétarienne, donc',p:'pre',sep:' ',both:false},w:'allgemeine Aussage, Gewohnheit → Présent|vérité générale, habitude → présent'},
+ {t:'PR',s:'vous',v:'prendre',ob:'le train',mk:{w:'chaque lundi',p:'pre'},w:'chaque lundi → Gewohnheit|chaque lundi → habitude'},
+ {t:'PC',s:'il',v:'arriver',ob:'à la gare',mk:{w:'pendant que nous attendions',p:'pre',both:false},w:'einmalige Handlung, die dazwischenkommt → passé composé|action ponctuelle qui survient → passé composé'},
+ {t:'PC',s:'je',v:'finir',ob:'les devoirs',mk:{w:'hier soir'},w:'hier soir → abgeschlossen → passé composé|hier soir → action terminée → passé composé'},
+ {t:'PC',s:'nous',v:'visiter',ob:'le château',mk:{w:'samedi dernier'},w:'samedi dernier → einmalig, abgeschlossen|samedi dernier → une fois, terminé'},
+ {t:'PC',s:'elle',v:'ouvrir',ob:'la porte',mk:{w:"quand j'ai entendu un bruit",p:'pre',both:false},w:'Ereignis, das auf ein anderes folgt → passé composé|événement qui s’enchaîne → passé composé'},
+ {t:'PC',s:'ils',v:'venir',ob:'à la fête',f:'neg',mk:{w:'hier'},w:'hier → passé composé; venir → être, Partizip passt sich an (venus)|hier → passé composé ; venir → être, accord (venus)'},
+ {t:'PC',s:'elle',v:'lever',ob:'à sept heures',mk:{w:'ce matin'},w:'ce matin (vorbei) → passé composé; reflexiv → être (levée)|ce matin (terminé) → passé composé ; pronominal → être (levée)'},
+ {t:'IMP',s:'nous',v:'jouer',ob:'au foot',mk:{w:'quand nous étions petits',p:'pre',both:false},w:'Gewohnheit in der Vergangenheit → imparfait|habitude dans le passé → imparfait'},
+ {t:'IMP',s:'il',v:'dormir',ob:'profondément',mk:{w:'quand le téléphone a sonné',p:'pre',both:false},w:'Hintergrund, laufende Handlung → imparfait|arrière-plan, action en cours → imparfait'},
+ {t:'IMP',s:'je',v:'habiter',ob:'à la campagne',mk:{w:'autrefois',p:'pre'},w:'autrefois → früherer Zustand → imparfait|autrefois → état passé → imparfait'},
+ {t:'IMP',s:'elles',v:'regarder',ob:'la télé',mk:{w:'pendant que nous cuisinions',p:'pre',both:false},w:'gleichzeitig laufende Handlung → imparfait|action simultanée en cours → imparfait'},
+ {t:'IMP',s:'tu',v:'voyager',ob:'en train',mk:{w:'chaque été',p:'pre'},w:'chaque été → Gewohnheit in der Vergangenheit|chaque été → habitude dans le passé'},
+ {t:'IMP',s:'elle',v:'avoir',ob:'un chat',mk:{w:'quand elle était petite',p:'pre',both:false},w:'Beschreibung eines früheren Zustands → imparfait|description d’un état passé → imparfait'},
+ {t:'FC',s:'je',v:'partir',ob:'en vacances',mk:{w:'demain'},w:'demain → nahe Zukunft, Plan → futur composé|demain → futur proche, projet → futur composé'},
+ {t:'FC',s:'nous',v:'regarder',ob:'un film',mk:{w:'ce soir'},w:'ce soir → nahe Zukunft|ce soir → futur proche'},
+ {t:'FC',s:'ils',v:'arriver',ob:'à la gare',mk:{w:'dans cinq minutes'},w:'dans cinq minutes → unmittelbar bevorstehend|dans cinq minutes → tout de suite'},
+ {t:'FC',s:'tu',v:'faire',ob:'les devoirs',mk:{w:"tout à l'heure"},w:'tout à l’heure → geplant, gleich|tout à l’heure → prévu, bientôt'},
+ {t:'FC',s:'elle',v:'coucher',ob:'tôt',mk:{w:'ce soir'},w:'ce soir → nahe Zukunft; reflexiv: va se coucher|ce soir → futur proche ; pronominal : va se coucher'},
+ {t:'FC',s:'vous',v:'acheter',ob:'du pain~de pain',f:'neg',mk:{w:'cet après-midi'},w:'cet après-midi → nahe Zukunft; ne … pas um aller|cet après-midi → futur proche ; ne … pas autour d’aller'},
+ {t:'FS',s:'je',v:'devenir',ob:'médecin',mk:{w:'dans dix ans',p:'pre'},w:'dans dix ans → ferne Zukunft → futur simple|dans dix ans → futur lointain → futur simple'},
+ {t:'FS',s:'nous',v:'habiter',ob:'à Paris',mk:{w:'un jour',p:'pre'},w:'un jour → unbestimmte, ferne Zukunft|un jour → futur lointain'},
+ {t:'FS',s:'elle',v:'voyager',ob:'en Italie',mk:{w:"l'année prochaine",p:'pre'},w:'l’année prochaine → Zukunft → futur simple|l’année prochaine → futur → futur simple'},
+ {t:'FS',s:'tu',v:'être',ob:'à la maison',mk:{w:'plus tard',p:'pre'},w:'plus tard → Zukunft; être → ser-|plus tard → futur ; être → ser-'},
+ {t:'FS',s:'vous',v:'finir',ob:'le travail',mk:{w:'à la fin du mois',p:'pre'},w:'à la fin du mois → Zukunft → futur simple|à la fin du mois → futur → futur simple'},
+ {t:'FS',s:'il',v:'venir',ob:'avec nous',f:'neg',mk:{w:"à l'avenir",p:'pre'},w:'à l’avenir → Zukunft; venir → viendr-|à l’avenir → futur ; venir → viendr-'},
+ {t:'CO',s:'je',v:'voyager',ob:'en Italie',mk:{w:"si j'avais le temps",p:'pre',both:false},w:'si + Imparfait → Conditionnel (unwirklich)|si + imparfait → conditionnel (irréel)'},
+ {t:'CO',s:'nous',v:'acheter',ob:'une maison~de maison',mk:{w:"si nous avions plus d'argent",p:'pre',both:false},w:'si + Imparfait → Conditionnel|si + imparfait → conditionnel'},
+ {t:'CO',s:'tu',v:'pouvoir',ob:'venir avec nous',mk:{w:'si tu voulais',p:'pre',both:false},w:'si + Imparfait → Conditionnel|si + imparfait → conditionnel'},
+ {t:'CO',s:'je',v:'vouloir',ob:'un café',mk:{w:"s'il vous plaît",p:'post',both:false,sepPost:', '},w:'höfliche Bitte → Conditionnel|demande polie → conditionnel'},
+ {t:'CO',s:'ils',v:'venir',ob:'chez nous',mk:{w:"s'il faisait beau",p:'pre',both:false},w:'si + Imparfait → Conditionnel|si + imparfait → conditionnel'},
+ {t:'CO',s:'je',v:'aller',ob:'chez le médecin',mk:{w:'à ta place',p:'pre',both:false},w:'Rat («an deiner Stelle») → Conditionnel|conseil (« à ta place ») → conditionnel'},
+ {t:'IMT',s:'tu',v:'ouvrir',ob:'la fenêtre',mk:null,w:'Befehl (tu) → Impératif, ohne Pronomen|ordre (tu) → impératif, sans pronom'},
+ {t:'IMT',s:'nous',v:'aller',ob:'au cinéma',mk:null,w:'Vorschlag («lasst uns …») → Impératif (nous)|proposition (« allons … ») → impératif (nous)'},
+ {t:'IMT',s:'vous',v:'attendre',ob:'le bus',f:'neg',mk:null,w:'verneinter Befehl (vous) → N’attendez pas …|ordre négatif (vous) → N’attendez pas …'},
+ {t:'PR',s:'lucas',v:'jouer',ob:'au foot',mk:{w:"le lundi"},w:"le lundi → Gewohnheit → Présent|le lundi → habitude → Présent"},
+ {t:'PR',s:'je',v:'écouter',ob:'de la musique~de musique',mk:{w:"d'habitude",p:"pre"},w:"d'habitude → Gewohnheit → Présent|d'habitude → habitude → Présent"},
+ {t:'PR',s:'elles',v:'étudier',ob:'le français',mk:{w:"chaque semaine"},w:"chaque semaine → Gewohnheit → Présent|chaque semaine → habitude → Présent"},
+ {t:'PR',s:'tu',v:'regarder',ob:'une série~de série',mk:{w:"en ce moment"},w:"en ce moment → gerade jetzt → Présent|en ce moment → maintenant → Présent"},
+ {t:'PR',s:'nous',v:'prendre',ob:'le bus',mk:{w:"tous les matins"},w:"tous les matins → Gewohnheit → Présent|tous les matins → habitude → Présent"},
+ {t:'PR',s:'on',v:'manger',ob:'des pâtes~de pâtes',mk:{w:"tous les samedis"},w:"tous les samedis → Gewohnheit → Présent|tous les samedis → habitude → Présent"},
+ {t:'PR',s:'sara',v:'lire',ob:'un livre~de livre',mk:{w:"maintenant",p:"pre"},w:"maintenant → jetzt → Présent|maintenant → maintenant → Présent"},
+ {t:'PR',s:'frere',v:'travailler',ob:'dans une banque',mk:{w:"chaque jour"},w:"chaque jour → Gewohnheit → Présent|chaque jour → habitude → Présent"},
+ {t:'PR',s:'ils',v:'nager',ob:'dans le lac',mk:{w:"tous les dimanches"},w:"tous les dimanches → Gewohnheit → Présent|tous les dimanches → habitude → Présent"},
+ {t:'PR',s:'il',v:'boire',ob:'du lait~de lait',f:'neg',mk:{w:"d'habitude",p:"pre"},w:"d'habitude → Gewohnheit → Présent|d'habitude → habitude → Présent"},
+ {t:'PR',s:'amies',v:'chanter',ob:'dans la chorale',mk:{w:"chaque semaine"},w:"chaque semaine → Gewohnheit → Présent|chaque semaine → habitude → Présent"},
+ {t:'PR',s:'eleves',v:'apprendre',ob:'les verbes',mk:{w:"en ce moment"},w:"en ce moment → gerade jetzt → Présent|en ce moment → maintenant → Présent"},
+ {t:'PR',s:'tom',v:'cuisiner',ob:'le dîner',mk:{w:"tous les soirs"},w:"tous les soirs → Gewohnheit → Présent|tous les soirs → habitude → Présent"},
+ {t:'PR',s:'je',v:'lever',ob:'à sept heures',mk:{w:"chaque jour"},w:"chaque jour → Gewohnheit → Présent|chaque jour → habitude → Présent"},
+ {t:'PR',s:'nous',v:'dormir',ob:'huit heures',mk:{w:"chaque nuit"},w:"chaque nuit → Gewohnheit → Présent|chaque nuit → habitude → Présent"},
+ {t:'PR',s:'soeur',v:'acheter',ob:'du pain~de pain',mk:{w:"le samedi"},w:"le samedi → Gewohnheit → Présent|le samedi → habitude → Présent"},
+ {t:'PR',s:'vous',v:'écrire',ob:'un mail~de mail',mk:{w:"en ce moment"},w:"en ce moment → gerade jetzt → Présent|en ce moment → maintenant → Présent"},
+ {t:'PR',s:'lea',v:'finir',ob:'le travail',mk:{w:"tous les soirs"},w:"tous les soirs → Gewohnheit → Présent|tous les soirs → habitude → Présent"},
+ {t:'PC',s:'elle',v:'finir',ob:'le travail',mk:{w:"hier soir"},w:"hier soir → abgeschlossen → passé composé|hier soir → action terminée → passé composé"},
+ {t:'PC',s:'nous',v:'visiter',ob:'un musée~de musée',mk:{w:"lundi dernier"},w:"lundi dernier → einmalig, abgeschlossen → passé composé|lundi dernier → une fois, terminé → passé composé"},
+ {t:'PC',s:'je',v:'perdre',ob:'les clés',mk:{w:"ce matin"},w:"ce matin → abgeschlossen → passé composé|ce matin → action terminée → passé composé"},
+ {t:'PC',s:'tu',v:'rentrer',ob:'tard',mk:{w:"hier soir"},w:"hier soir → abgeschlossen → passé composé|hier soir → action terminée → passé composé"},
+ {t:'PC',s:'ils',v:'partir',ob:'en vacances',mk:{w:"la semaine dernière"},w:"la semaine dernière → abgeschlossen → passé composé|la semaine dernière → action terminée → passé composé"},
+ {t:'PC',s:'lea',v:'acheter',ob:'des chaussures~de chaussures',mk:{w:"samedi dernier"},w:"samedi dernier → einmalig, abgeschlossen → passé composé|samedi dernier → une fois, terminé → passé composé"},
+ {t:'PC',s:'vous',v:'voir',ob:'un film~de film',mk:{w:"hier"},w:"hier → abgeschlossen → passé composé|hier → action terminée → passé composé"},
+ {t:'PC',s:'on',v:'regarder',ob:'le match',mk:{w:"hier soir"},w:"hier soir → abgeschlossen → passé composé|hier soir → action terminée → passé composé"},
+ {t:'PC',s:'tom',v:'tomber',ob:'de vélo',mk:{w:"ce matin"},w:"ce matin → abgeschlossen → passé composé|ce matin → action terminée → passé composé"},
+ {t:'PC',s:'elles',v:'arriver',ob:'en retard',mk:{w:"hier"},w:"hier → abgeschlossen → passé composé|hier → action terminée → passé composé"},
+ {t:'PC',s:'je',v:'écrire',ob:'une lettre~de lettre',mk:{w:"il y a trois jours",p:"pre"},w:"il y a trois jours → abgeschlossen → passé composé|il y a trois jours → action terminée → passé composé"},
+ {t:'PC',s:'frere',v:'prendre',ob:'le train',mk:{w:"la semaine dernière"},w:"la semaine dernière → abgeschlossen → passé composé|la semaine dernière → action terminée → passé composé"},
+ {t:'PC',s:'sara',v:'répondre',ob:'au prof',f:'neg',mk:{w:"hier"},w:"hier → abgeschlossen → passé composé|hier → action terminée → passé composé"},
+ {t:'PC',s:'nous',v:'promener',ob:'au bord du lac',mk:{w:"samedi dernier"},w:"samedi dernier → einmalig, abgeschlossen → passé composé|samedi dernier → une fois, terminé → passé composé"},
+ {t:'PC',s:'tu',v:'apprendre',ob:'une chanson~de chanson',mk:{w:"hier soir"},w:"hier soir → abgeschlossen → passé composé|hier soir → action terminée → passé composé"},
+ {t:'PC',s:'amies',v:'sortir',ob:'de la maison',mk:{w:"ce matin"},w:"ce matin → abgeschlossen → passé composé|ce matin → action terminée → passé composé"},
+ {t:'PC',s:'il',v:'boire',ob:'un thé~de thé',mk:{w:"il y a deux heures",p:"pre"},w:"il y a deux heures → abgeschlossen → passé composé|il y a deux heures → action terminée → passé composé"},
+ {t:'PC',s:'eleves',v:'comprendre',ob:'la leçon',f:'neg',mk:{w:"hier"},w:"hier → abgeschlossen → passé composé|hier → action terminée → passé composé"},
+ {t:'IMP',s:'nous',v:'habiter',ob:'à la campagne',mk:{w:"autrefois",p:"pre"},w:"autrefois → früherer Zustand / frühere Gewohnheit → imparfait|autrefois → état / habitude passé(e) → imparfait"},
+ {t:'IMP',s:'il',v:'lire',ob:'le journal',mk:{w:"tous les dimanches"},w:"tous les dimanches → Gewohnheit → imparfait|tous les dimanches → habitude → imparfait"},
+ {t:'IMP',s:'elles',v:'nager',ob:'dans le lac',mk:{w:"chaque été"},w:"chaque été → Gewohnheit in der Vergangenheit → imparfait|chaque été → habitude dans le passé → imparfait"},
+ {t:'IMP',s:'tu',v:'écouter',ob:'la radio',mk:{w:"à cette époque-là",p:"pre"},w:"à cette époque-là → früherer Zustand → imparfait|à cette époque-là → état passé → imparfait"},
+ {t:'IMP',s:'parents',v:'travailler',ob:'dans une banque',mk:{w:"autrefois",p:"pre"},w:"autrefois → früherer Zustand / frühere Gewohnheit → imparfait|autrefois → état / habitude passé(e) → imparfait"},
+ {t:'IMP',s:'on',v:'manger',ob:'du pain~de pain',mk:{w:"tous les jours"},w:"tous les jours → Gewohnheit in der Vergangenheit → imparfait|tous les jours → habitude dans le passé → imparfait"},
+ {t:'IMP',s:'vous',v:'voyager',ob:'en train',mk:{w:"pendant les vacances"},w:"pendant les vacances → Gewohnheit in der Vergangenheit → imparfait|pendant les vacances → habitude dans le passé → imparfait"},
+ {t:'IMP',s:'amies',v:'jouer',ob:'au foot',mk:{w:"à cette époque-là",p:"pre"},w:"à cette époque-là → früherer Zustand → imparfait|à cette époque-là → état passé → imparfait"},
+ {t:'IMP',s:'il',v:'travailler',ob:'beaucoup',f:'neg',mk:{w:"autrefois",p:"pre"},w:"autrefois → früherer Zustand / frühere Gewohnheit → imparfait|autrefois → état / habitude passé(e) → imparfait"},
+ {t:'IMP',s:'nous',v:'cuisiner',ob:'pour la famille',mk:{w:"tous les dimanches"},w:"tous les dimanches → Gewohnheit → imparfait|tous les dimanches → habitude → imparfait"},
+ {t:'IMP',s:'je',v:'dormir',ob:'bien',mk:{w:"autrefois",p:"pre"},w:"autrefois → früherer Zustand / frühere Gewohnheit → imparfait|autrefois → état / habitude passé(e) → imparfait"},
+ {t:'IMP',s:'lea',v:'chanter',ob:'dans la chorale',mk:{w:"chaque été"},w:"chaque été → Gewohnheit in der Vergangenheit → imparfait|chaque été → habitude dans le passé → imparfait"},
+ {t:'IMP',s:'je',v:'jouer',ob:'aux cartes',mk:{w:"quand j'étais petit",p:"pre",both:false},w:"quand j’étais petit → Gewohnheit in der Vergangenheit → imparfait|quand j’étais petit → habitude dans le passé → imparfait"},
+ {t:'IMP',s:'sara',v:'avoir',ob:'un vélo~de vélo',mk:{w:"quand elle était petite",p:"pre",both:false},w:"quand elle était petite → früherer Zustand → imparfait|quand elle était petite → état passé → imparfait"},
+ {t:'IMP',s:'frere',v:'regarder',ob:'la télé',mk:{w:"pendant que je cuisinais",p:"pre",both:false},w:"gleichzeitig laufende Handlung → imparfait|action simultanée en cours → imparfait"},
+ {t:'IMP',s:'soeur',v:'dormir',ob:'profondément',mk:{w:"quand je suis rentré",p:"pre",both:false},w:"Hintergrund, laufende Handlung → imparfait|arrière-plan, action en cours → imparfait"},
+ {t:'PC',s:'tom',v:'arriver',ob:'en retard',mk:{w:"pendant que nous mangions",p:"pre",both:false},w:"einmalige Handlung, die dazwischenkommt → passé composé|action ponctuelle qui survient → passé composé"},
+ {t:'PC',s:'elle',v:'prendre',ob:'une photo~de photo',mk:{w:"quand nous étions au parc",p:"pre",both:false},w:"einmalige Handlung → passé composé|action ponctuelle → passé composé"},
+ {t:'FC',s:'tu',v:'finir',ob:'le livre',mk:{w:"ce week-end"},w:"ce week-end → nahe Zukunft, Plan → futur composé|ce week-end → futur proche, projet → futur composé"},
+ {t:'FC',s:'nous',v:'aller',ob:'au cinéma',mk:{w:"ce soir",p:"pre"},w:"ce soir → nahe Zukunft → futur composé|ce soir → futur proche → futur composé"},
+ {t:'FC',s:'elle',v:'acheter',ob:'un cadeau~de cadeau',mk:{w:"demain matin"},w:"demain matin → nahe Zukunft, Plan → futur composé|demain matin → futur proche, projet → futur composé"},
+ {t:'FC',s:'ils',v:'visiter',ob:'le château',mk:{w:"ce week-end"},w:"ce week-end → nahe Zukunft, Plan → futur composé|ce week-end → futur proche, projet → futur composé"},
+ {t:'FC',s:'je',v:'appeler',ob:'le médecin',mk:{w:"dans une heure"},w:"dans une heure → unmittelbar bevorstehend → futur composé|dans une heure → tout de suite → futur composé"},
+ {t:'FC',s:'on',v:'manger',ob:'une pizza~de pizza',mk:{w:"ce soir",p:"pre"},w:"ce soir → nahe Zukunft → futur composé|ce soir → futur proche → futur composé"},
+ {t:'FC',s:'vous',v:'rentrer',ob:'chez nous',mk:{w:"cet après-midi"},w:"cet après-midi → nahe Zukunft → futur composé|cet après-midi → futur proche → futur composé"},
+ {t:'FC',s:'lea',v:'choisir',ob:'un dessert~de dessert',mk:{w:"ce soir",p:"pre"},w:"ce soir → nahe Zukunft → futur composé|ce soir → futur proche → futur composé"},
+ {t:'FC',s:'frere',v:'jouer',ob:'au foot',mk:{w:"demain"},w:"demain → nahe Zukunft, Plan → futur composé|demain → futur proche, projet → futur composé"},
+ {t:'FC',s:'elles',v:'partir',ob:'pour Paris',mk:{w:"demain matin"},w:"demain matin → nahe Zukunft, Plan → futur composé|demain matin → futur proche, projet → futur composé"},
+ {t:'FC',s:'tom',v:'envoyer',ob:'un message~de message',f:'neg',mk:{w:"tout à l'heure"},w:" → futur composé| → futur composé"},
+ {t:'FC',s:'nous',v:'cuisiner',ob:'le dîner',mk:{w:"ce soir",p:"pre"},w:"ce soir → nahe Zukunft → futur composé|ce soir → futur proche → futur composé"},
+ {t:'FS',s:'tu',v:'devenir',ob:'médecin',mk:{w:"dans vingt ans",p:"pre"},w:"dans vingt ans → ferne Zukunft → futur simple|dans vingt ans → futur lointain → futur simple"},
+ {t:'FS',s:'nous',v:'voyager',ob:'en avion',mk:{w:"un jour",p:"pre"},w:"un jour → ferne Zukunft → futur simple|un jour → futur lointain → futur simple"},
+ {t:'FS',s:'je',v:'habiter',ob:'à Paris',mk:{w:"l'année prochaine",p:"pre"},w:"l'année prochaine → Zukunft → futur simple|l'année prochaine → futur → futur simple"},
+ {t:'FS',s:'elles',v:'étudier',ob:'la géographie',mk:{w:"plus tard",p:"pre"},w:"plus tard → Zukunft → futur simple|plus tard → futur → futur simple"},
+ {t:'FS',s:'on',v:'être',ob:'à la maison',mk:{w:"plus tard",p:"pre"},w:"plus tard → Zukunft → futur simple|plus tard → futur → futur simple"},
+ {t:'FS',s:'vous',v:'avoir',ob:'un chat~de chat',mk:{w:"un jour",p:"pre"},w:"un jour → ferne Zukunft → futur simple|un jour → futur lointain → futur simple"},
+ {t:'FS',s:'il',v:'pouvoir',ob:'nous aider',mk:{w:"plus tard",p:"pre"},w:"plus tard → Zukunft → futur simple|plus tard → futur → futur simple"},
+ {t:'FS',s:'lea',v:'faire',ob:'du sport~de sport',mk:{w:"l'année prochaine",p:"pre"},w:"l'année prochaine → Zukunft → futur simple|l'année prochaine → futur → futur simple"},
+ {t:'FS',s:'ils',v:'aller',ob:'à Zurich',mk:{w:"dans dix ans",p:"pre"},w:"dans dix ans → ferne Zukunft → futur simple|dans dix ans → futur lointain → futur simple"},
+ {t:'FS',s:'je',v:'savoir',ob:'la réponse',mk:{w:"plus tard",p:"pre"},w:"plus tard → Zukunft → futur simple|plus tard → futur → futur simple"},
+ {t:'FS',s:'tom',v:'devenir',ob:'ingénieur',mk:{w:"dans vingt ans",p:"pre"},w:"dans vingt ans → ferne Zukunft → futur simple|dans vingt ans → futur lointain → futur simple"},
+ {t:'FS',s:'amies',v:'voir',ob:'la mer',mk:{w:"l'année prochaine",p:"pre"},w:"l'année prochaine → Zukunft → futur simple|l'année prochaine → futur → futur simple"},
+ {t:'FS',s:'nous',v:'venir',ob:'chez vous',f:'neg',mk:{w:"un jour",p:"pre"},w:"un jour → ferne Zukunft → futur simple|un jour → futur lointain → futur simple"},
+ {t:'CO',s:'nous',v:'aller',ob:'au cinéma',mk:{w:"si nous avions le temps",p:"pre",both:false},w:"si nous avions le temps → Conditionnel (unwirklich)|si nous avions le temps → conditionnel (irréel)"},
+ {t:'CO',s:'elle',v:'acheter',ob:'un cadeau~de cadeau',mk:{w:"si elle avait plus d'argent",p:"pre",both:false},w:"si elle avait plus d'argent → Conditionnel (unwirklich)|si elle avait plus d'argent → conditionnel (irréel)"},
+ {t:'CO',s:'je',v:'partir',ob:'en vacances',mk:{w:"si j'avais le temps",p:"pre",both:false},w:"si j'avais le temps → Conditionnel (unwirklich)|si j'avais le temps → conditionnel (irréel)"},
+ {t:'CO',s:'ils',v:'jouer',ob:'au foot',mk:{w:"s'il faisait beau",p:"pre",both:false},w:"s'il faisait beau → Conditionnel (unwirklich)|s'il faisait beau → conditionnel (irréel)"},
+ {t:'CO',s:'on',v:'manger',ob:'une pizza~de pizza',mk:{w:"si on avait faim",p:"pre",both:false},w:"si on avait faim → Conditionnel (unwirklich)|si on avait faim → conditionnel (irréel)"},
+ {t:'CO',s:'tu',v:'venir',ob:'chez nous',mk:{w:"si tu voulais",p:"pre",both:false},w:"si tu voulais → Conditionnel (unwirklich)|si tu voulais → conditionnel (irréel)"},
+ {t:'CO',s:'vous',v:'pouvoir',ob:'nous aider',mk:{w:"si vous aviez le temps",p:"pre",both:false},w:"si vous aviez le temps → Conditionnel (unwirklich)|si vous aviez le temps → conditionnel (irréel)"},
+ {t:'CO',s:'lea',v:'nager',ob:'dans le lac',mk:{w:"s'il faisait chaud",p:"pre",both:false},w:"s'il faisait chaud → Conditionnel (unwirklich)|s'il faisait chaud → conditionnel (irréel)"},
+ {t:'CO',s:'nous',v:'habiter',ob:'à Paris',mk:{w:"si nous étions riches",p:"pre",both:false},w:"si nous étions riches → Conditionnel (unwirklich)|si nous étions riches → conditionnel (irréel)"},
+ {t:'CO',s:'je',v:'prendre',ob:'le train',mk:{w:"à ta place",p:"pre",both:false},w:"Rat («an deiner Stelle») → Conditionnel|conseil (« à ta place ») → conditionnel"},
+ {t:'CO',s:'je',v:'vouloir',ob:'un thé~de thé',mk:{w:"s'il vous plaît",p:"post",both:false,sepPost:", "},w:"höfliche Bitte → Conditionnel|demande polie → conditionnel"},
+ {t:'CO',s:'nous',v:'vouloir',ob:'une glace~de glace',mk:{w:"s'il vous plaît",p:"post",both:false,sepPost:", "},w:"höfliche Bitte → Conditionnel|demande polie → conditionnel"},
+ {t:'IMT',s:'tu',v:'finir',ob:'les devoirs',mk:null,w:"Befehl (tu) → Impératif, ohne Pronomen|ordre (tu) → impératif, sans pronom"},
+ {t:'IMT',s:'vous',v:'écouter',ob:'le prof',mk:null,w:"Befehl (vous) → Impératif, ohne Pronomen|ordre (vous) → impératif, sans pronom"},
+ {t:'IMT',s:'nous',v:'choisir',ob:'un film~de film',mk:null,w:"Vorschlag («lasst uns …») → Impératif (nous)|proposition (« … ons ») → impératif (nous)"},
+ {t:'IMT',s:'tu',v:'perdre',ob:'les clés',f:'neg',mk:null,w:"Befehl (tu) → Impératif, ohne Pronomen|ordre (tu) → impératif, sans pronom"},
+ {t:'IMT',s:'vous',v:'prendre',ob:'le bus',mk:null,w:"Befehl (vous) → Impératif, ohne Pronomen|ordre (vous) → impératif, sans pronom"},
+ {t:'IMT',s:'tu',v:'rester',ob:'ici',mk:null,w:"Befehl (tu) → Impératif, ohne Pronomen|ordre (tu) → impératif, sans pronom"},
+ {t:'IMT',s:'nous',v:'partir',ob:'à sept heures',mk:null,w:"Vorschlag («lasst uns …») → Impératif (nous)|proposition (« … ons ») → impératif (nous)"},
+ {t:'IMT',s:'vous',v:'ouvrir',ob:'la fenêtre',f:'neg',mk:null,w:"Befehl (vous) → Impératif, ohne Pronomen|ordre (vous) → impératif, sans pronom"},
+ {t:'IMT',s:'tu',v:'apprendre',ob:'les verbes',mk:null,w:"Befehl (tu) → Impératif, ohne Pronomen|ordre (tu) → impératif, sans pronom"},
+ {t:'IMT',s:'nous',v:'manger',ob:'une pizza~de pizza',mk:null,w:"Vorschlag («lasst uns …») → Impératif (nous)|proposition (« … ons ») → impératif (nous)"}
+];
+function genCtx(tn){
+ let l=CTX.filter(c=>tn.includes(c.t));if(!l.length)l=CTX;
+ const fresh=l.filter(c=>!globalSeen.has('ctx'+CTX.indexOf(c)));
+ const c=rnd(fresh.length?fresh:l);
+ globalSeen.add('ctx'+CTX.indexOf(c));
+ const it=build({t:c.t,form:c.f||'pos',S:SBY[c.s],v:VBY[c.v],ob:OB(c.ob),mk:c.mk});
+ it.type='ctx';it.why=c.w;
+ if(c.t==='FC'||c.t==='FS'){
+  const o2=c.t==='FC'?'FS':'FC';
+  for(const g of grpVariants(it.v,o2,it.form==='neg',it.S))if(!it.alt.includes(g))it.alt.push(g);
+  it.bothFut=true;
+ }
+ return it;
+}
+function pcBase(){
+ const v=rnd(arguments.length?arguments[0]:pool());
+ const S0=pickSubj('PC');
+ return {t:'PC',form:'pos',S:S0,v,ob:rnd(v.objs),mk:pickMk('PC',S0)};
+}
+function pcSplit(o,mode){
+ const a=agrs(o.S)[0],P=parts(o.v,'PC',o.S.p,a);
+ const rfTok=P.rf?((['me','te','se'].includes(P.rf)&&vowel(P.fin))?P.rf[0]+"'":P.rf+' '):'';
+ const pos=o.mk?(o.mk.p||'post'):null;
+ const pre=(o.mk&&pos==='pre')?o.mk.w+(o.mk.sep!==undefined?o.mk.sep:', '):'';
+ const post=(o.mk&&pos==='post')?(o.mk.sepPost!==undefined?o.mk.sepPost:' ')+o.mk.w:'';
+ const sj=subjLead(o.S,rfTok||P.fin);
+ const ob=o.ob.p;
+ let before,gap,after,alt=[];
+ if(mode==='aux'){before=pre+sj+rfTok;gap=P.fin;after=' '+P.rest+(ob?' '+ob:'')+post+'.'}
+ else{
+  before=pre+sj+rfTok+P.fin+' ';gap=P.rest;after=(ob?' '+ob:'')+post+'.';
+  for(const b of agrs(o.S)){const x=ppAgr(o.v,b);if(x!==gap&&!alt.includes(x))alt.push(x)}
+ }
+ before=cap(before);
+ return {before,gap,after,alt,sentence:before+gap+after};
+}
+function genAux(){
+ const lp=lvPool(),v=rnd(Math.random()<.5?lp.filter(x=>x.aux==='E'):lp.filter(x=>x.aux==='A'));
+ const S0=pickSubj('PC'),o={t:'PC',form:'pos',S:S0,v,ob:rnd(v.objs),mk:pickMk('PC',S0)};
+ const P=pcSplit(o,'aux');
+ return Object.assign({},o,P,{type:'aux',ans:v.aux==='A'?'avoir':'être'});
+}
+function genPP(){
+ const o=pcBase(pool());
+ const P=pcSplit(o,'pp');
+ return Object.assign({},o,P,{type:'pp'});
+}
+function rowForms(v,t,p){
+ if(t==='IMT'){const S0=SUBJ.find(s=>s.p===p&&s.pr);return [impGrp(v,S0,false)]}
+ const out=[];
+ const lst=(p===2)?[['m','s'],['f','s'],['m','p'],['f','p']]:(p===5)?[['m','p'],['f','p']]:(p===0||p===1)?[['m','s'],['f','s']]:[['m','p'],['f','p']];
+ for(const a of lst){const s=strGrp(parts(v,t,p,a),false);if(!out.includes(s))out.push(s)}
+ return out;
+}
+function genTable(){
+ const tn=S.tenses.length?S.tenses:['PR'];
+ const t=rnd(tn);
+ const lp=pool(),vv=t==='IMT'?lp.filter(v=>v.im):lp;
+ const v=rnd(vv.length?vv:lvPool().filter(x=>x.im));
+ const pers=t==='IMT'?[1,3,4]:[0,1,2,3,4,5];
+ const labs=['je','tu','il / elle / on','nous','vous','ils / elles'];
+ const rows=pers.map(p=>{const forms=rowForms(v,t,p);let lab=labs[p];if(p===0&&vowel(forms[0]))lab="j'";if(t==='IMT')lab='('+labs[p]+')';return {p,lab,forms}});
+ return {type:'table',t,v,rows,form:'pos',sentence:v.disp+' '+t};
+}
+function genAns(){
+ const tn=(S.tenses.length?S.tenses:['PR']).filter(x=>x!=='IMT'),t=tn.length?rnd(tn):'PR';
+ const v=rnd(poolFor(t,'pos'));
+ const S0=SBY[rnd(['tu','nous','vous','il','elle','ils','elles','lea','tom','sara','lucas','frere','soeur','parents','amies','eleves'])];
+ const q=build({t,form:'q',S:S0,v,ob:rnd(v.objs),mk:null});
+ const yes=Math.random()<.5;
+ const Sa=({tu:SBY.je,vous:SBY.nous,nous:SBY.nous}[S0.k])||(S0.pr?S0:SBY[S0.g==='m'?(S0.n==='s'?'il':'ils'):(S0.n==='s'?'elle':'elles')]);
+ const ob=q.ob;
+ const answers=[];
+ for(const g of grpVariants(v,t,!yes,Sa)){
+  const sj=subjLead(Sa,g),core=sj+g,obT=yes?ob.p:ob.n;
+  for(const pre of [yes?'Oui, ':'Non, ','']){
+   answers.push(pre+core+' '+obT);
+   answers.push(pre+core);
+  }
+ }
+ const primary=(yes?'Oui, ':'Non, ')+cap(subjLead(Sa,grpVariants(v,t,!yes,Sa)[0])+grpVariants(v,t,!yes,Sa)[0])+' '+(yes?ob.p:ob.n)+'.';
+ const prim=(yes?'Oui, ':'Non, ')+subjLead(Sa,grpVariants(v,t,!yes,Sa)[0])+grpVariants(v,t,!yes,Sa)[0]+' '+(yes?ob.p:ob.n)+'.';
+ return {type:'ans',t,v,S:S0,Sa,ob,form:yes?'pos':'neg',yes,question:q.sentence,sentence:prim,answers,mk:null};
+}
+function genTrans(){
+ const tn=S.tenses.length?S.tenses:['PR'],nonI=tn.filter(x=>x!=='IMT'),kinds=[];
+ if(S.forms.includes('neg'))kinds.push('neg');
+ if(S.forms.includes('q')&&nonI.length)kinds.push('q');
+ if(nonI.length>=2)kinds.push('tense');
+ const kind=kinds.length?rnd(kinds):'neg';
+ let src,tgt,o;
+ if(kind==='tense'){
+  const t1=rnd(nonI);let t2;do{t2=rnd(nonI)}while(t2===t1);
+  const form=rnd(S.forms.length?S.forms:['pos']);
+  o=baseObj(t1,form);
+  src=build(o);
+  tgt=build(Object.assign({},o,{t:t2,mk:pickMk(t2,o.S)}));
+ }else if(kind==='q'){
+  o=baseObj(rnd(nonI),'pos');
+  src=build(o);tgt=build(Object.assign({},o,{form:'q'}));
+ }else{
+  o=baseObj(rnd(tn),'pos');
+  if(o.t==='IMT'&&o.v.n)o=baseObj('IMT','neg');
+  const pv=poolFor(o.t,'neg');if(!pv.includes(o.v))o.v=rnd(pv);
+  src=build(Object.assign({},o,{form:'pos'}));tgt=build(Object.assign({},o,{form:'neg'}));
+ }
+ const it=Object.assign({},tgt,{type:'trans',instr:kind,src});
+ it.vars=variantsOf(tgt);
+ it.soft=kind==='q'?softOf(tgt):[];
+ it.nomark=(kind==='tense'&&tgt.mk)?variantsOf(build(Object.assign({},tgt,{mk:null}))):[];
+ it.showMk=kind==='tense'&&!!tgt.mk;
+ it.gv=tgt.vars;
+ return it;
+}
+function checkTrans(it,val){
+ if(it.vars.some(a=>eq(val,a)))return 'ok';
+ if(it.nomark.some(a=>eq(val,a)))return 'nomark';
+ if(it.soft.some(a=>eq(val,a)))return 'soft';
+ return 'bad';
+}
+
+/* ===== Zustand / Einstellungen ===== */
+const MODES_=()=>[
+ {k:'rec',icon:'🔍',label:L('Erkennen','Reconnaître'),desc:L('Welche Zeitform ist das?','Quel temps est-ce ?')},
+ {k:'fill',icon:'✏️',label:L('Einsetzen','Compléter'),desc:L('Verb in die richtige Form setzen','Mettre le verbe à la bonne forme')},
+ {k:'trans',icon:'🔄',label:L('Umformen','Transformer'),desc:L('Andere Zeit, verneinen, Frage','Autre temps, négation, question')},
+ {k:'ctx',icon:'🧩',label:L('Zeit wählen','Choisir le temps'),desc:L('Aus dem Zusammenhang, z. B. passé composé oder imparfait','D’après le contexte, p. ex. passé composé ou imparfait')},
+ {k:'ans',icon:'💬',label:L('Antworten','Répondre'),desc:L('Oui, … / Non, … mit ganzem Satz','Oui, … / Non, … en phrase complète')},
+ {k:'aux',icon:'⚖️',label:'avoir ou être ?',desc:L('Welches Hilfsverb im passé composé?','Quel auxiliaire au passé composé ?')},
+ {k:'pp',icon:'🧱',label:'Participe passé',desc:L('Partizip bilden und angleichen','Former et accorder le participe')},
+ {k:'table',icon:'📊',label:L('Tabelle','Tableau'),desc:L('Alle Personen konjugieren','Conjuguer à toutes les personnes')}
+];
+const ALL_MODES=['rec','fill','trans','ctx','ans','aux','pp','table'];
+const FORMS_=()=>[{k:'pos',l:L('✓ positiv','✓ affirmatif')},{k:'neg',l:L('✗ verneint','✗ négatif')},{k:'q',l:L('? Frage','? question')}];
+const TYPE_LABEL_=()=>({rec:L('🔍 Erkennen','🔍 Reconnaître'),fill:L('✏️ Einsetzen','✏️ Compléter'),trans:L('🔄 Umformen','🔄 Transformer'),ctx:L('🧩 Zeit wählen','🧩 Choisir le temps'),ans:L('💬 Antworten','💬 Répondre'),aux:'⚖️ avoir ou être ?',pp:'🧱 Participe passé',table:L('📊 Tabelle','📊 Tableau')});
+const instrText=it=>it.instr==='neg'?(it.t==='IMT'?L('Verneine den Befehl.','Mets l’ordre à la forme négative.'):L('Verneine den Satz.','Mets la phrase à la forme négative.')):it.instr==='q'?L('Mach eine Frage aus dem Satz.','Transforme la phrase en question.'):L('Schreib den Satz im '+T[it.t].name+'.','Écris la phrase au '+T[it.t].name+'.');
+const hintTxt=v=>v.disp+(LANG==='de'?' · '+v.de.split(',')[0]:'');
+let screen='setup';
+let S={tenses:['PR'],modes:['fill'],forms:['pos','neg','q'],count:10,hint:false,lvl:'A',vset:'all'};
+const globalSeen=new Set();
+let items=[],idx=0,score=0,results=[],answered=false,tries=0,infinite=false,seen=new Set(),studentName='';
+
+function renderSetup(){
+ screen='setup';items=[];
+ const MODES=MODES_(),FORMS=FORMS_();
+ const VS=[['all',L('Alle','Tous')],['ae','avoir + être'],['etre',L('mit être','avec être')],['refl',L('reflexiv','pronominaux')]];
+ app.innerHTML=`
+ <div class="card"><h2>${L('1 · Welche Zeitformen?','1 · Quels temps ?')}</h2>
+  <div class="chips">${ORDER.map(k=>`<button class="chip ${S.tenses.includes(k)?'on':''}" data-t="${k}" style="--c:${T[k].c}">${T[k].name}</button>`).join('')}</div>
+  <div class="links"><button class="btn-link sm" data-all="1">${L('alle wählen','tout sélectionner')}</button><button class="btn-link sm" data-all="0">${L('keine','aucun')}</button></div></div>
+ <div class="card"><h2>${L('2 · Übungsart','2 · Type d’exercice')}</h2>
+  <p class="muted" style="margin:-4px 0 10px;font-size:.9em">${L('Eine oder mehrere wählen – sie wechseln sich dann ab. «avoir ou être» und «Participe passé» üben immer das passé composé.','Choisis un ou plusieurs types – ils alternent. « avoir ou être » et « Participe passé » travaillent toujours le passé composé.')}</p>
+  <div class="modes">${MODES.map(m=>`<button class="mode ${S.modes.includes(m.k)?'on':''}" data-m="${m.k}"><b>${m.icon} ${m.label}</b><small>${m.desc}</small></button>`).join('')}</div>
+  <div class="links"><button class="btn-link sm" data-mall="1">${L('alle wählen','tout sélectionner')}</button><button class="btn-link sm" data-mall="0">${L('keine','aucun')}</button></div></div>
+ <div class="card"><h2>${L('3 · Satzarten','3 · Types de phrases')}</h2>
+  <div class="chips">${FORMS.map(f=>`<button class="chip ${S.forms.includes(f.k)?'on':''}" data-f="${f.k}">${f.l}</button>`).join('')}</div>
+  <p class="muted" style="margin:8px 0 0;font-size:.85em">${L('Beim Impératif gibt es nur positiv und verneint.','À l’impératif, il n’y a que l’affirmatif et le négatif.')}</p></div>
+ <div class="card"><h2>${L('4 · Verben','4 · Verbes')}</h2>
+  <div class="opt-row"><span>${L('Niveau','Niveau')}</span><div class="seg" id="lvlSeg"><button data-lv="A" class="${S.lvl==='A'?'on':''}">${L('A (alle Verben)','A (tous les verbes)')}</button><button data-lv="BC" class="${S.lvl==='BC'?'on':''}">${L('B/C (häufigste)','B/C (les plus fréquents)')}</button></div></div>
+  <div class="opt-row"><span>${L('Auswahl','Sélection')}</span><div class="seg">${VS.map(([k,l])=>`<button data-vs="${k}" class="${S.vset===k?'on':''}">${l}</button>`).join('')}</div></div></div>
+ <div class="card"><h2>${L('5 · Optionen','5 · Options')}</h2>
+  <div class="opt-row"><span>${L('Anzahl Aufgaben','Nombre d’exercices')}</span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><div class="seg">${[10,15,20,0].map(n=>`<button class="${S.count===n?'on':''}" data-n="${n}" ${n?'':`title="${L('Unendlich – üben, bis du auf Fertig klickst','Sans fin – jusqu’à ce que tu cliques sur Terminé')}"`}>${n||'∞'}</button>`).join('')}</div><input id="countIn" type="number" min="1" max="100" inputmode="numeric" placeholder="${L('eigene','autre')}" value="${[10,15,20,0].includes(S.count)?'':S.count}" class="count-in ${[10,15,20,0].includes(S.count)?'':'on'}" aria-label="${L('Eigene Anzahl Aufgaben','Nombre personnalisé')}"></div></div>
+  <div class="opt-row"><span>${L('Beim Einsetzen die Zeitform anzeigen','Afficher le temps lors du complément')}<br><small style="color:var(--muted)">${L('Aus = selber an den Signalwörtern erkennen','Désactivé = le reconnaître avec les mots-clés')}</small></span><button class="switch ${S.hint?'on':''}" id="hintSw" aria-label="${L('Zeitform anzeigen','Afficher le temps')}"></button></div></div>
+ <button class="primary" id="start">${L("Los geht's →",'C’est parti →')}</button>
+ <button class="secondary" id="sheetBtn" style="margin-top:10px">${L('🖨 Arbeitsblatt (Vorschau, PDF / Druck)','🖨 Fiche d’exercices (aperçu, PDF / impression)')}</button>
+ <p class="err" id="err"></p>`;
+ app.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.t){const k=b.dataset.t;S.tenses=S.tenses.includes(k)?S.tenses.filter(x=>x!==k):ORDER.filter(x=>x===k||S.tenses.includes(x))}
+  else if(b.dataset.all){S.tenses=b.dataset.all==='1'?ORDER.slice():[]}
+  else if(b.dataset.m){const k=b.dataset.m;S.modes=S.modes.includes(k)?S.modes.filter(x=>x!==k):ALL_MODES.filter(x=>x===k||S.modes.includes(x))}
+  else if(b.dataset.mall){S.modes=b.dataset.mall==='1'?ALL_MODES.slice():[]}
+  else if(b.dataset.f){const k=b.dataset.f;S.forms=S.forms.includes(k)?S.forms.filter(x=>x!==k):['pos','neg','q'].filter(x=>x===k||S.forms.includes(x))}
+  else if(b.dataset.lv){S.lvl=b.dataset.lv}
+  else if(b.dataset.vs){S.vset=b.dataset.vs}
+  else if(b.dataset.n!==undefined){S.count=+b.dataset.n}
+  else if(b.id==='hintSw'){S.hint=!S.hint}
+  else if(b.id==='start'){return start()}
+  else if(b.id==='sheetBtn'){return openSheet()}
+  else return;
+  renderSetup();
+ };
+ const ci=document.getElementById('countIn');
+ ci.oninput=()=>{const v=parseInt(ci.value,10);if(v>=1&&v<=100){S.count=v;ci.classList.add('on');app.querySelectorAll('[data-n]').forEach(x=>x.classList.remove('on'))}};
+ ci.onchange=()=>{const v=parseInt(ci.value,10);if(!(v>=1&&v<=100)){ci.value='';if(![10,15,20,0].includes(S.count))S.count=10;renderSetup()}};
+}
+
+function makeItem(type){
+ const tn=S.tenses.length?S.tenses:['PR'];
+ if(type==='trans')return genTrans();
+ if(type==='ans')return genAns();
+ if(type==='aux')return genAux();
+ if(type==='pp')return genPP();
+ if(type==='table')return genTable();
+ if(type==='ctx')return genCtx(tn);
+ const it=genItem(rnd(tn),rnd(S.forms.length?S.forms:['pos']));
+ it.type=type;return it;
+}
+function typeSequence(n){
+ const m=S.modes.length?S.modes:['fill'];
+ let bag=[];const seq=[];
+ for(let i=0;i<n;i++){
+  if(!bag.length)bag=m.slice().sort(()=>Math.random()-.5);
+  let j=0;
+  if(m.length>1&&seq.length>=2&&seq[seq.length-1]===seq[seq.length-2]){j=bag.findIndex(x=>x!==seq[seq.length-1]);if(j<0){bag=m.filter(x=>x!==seq[seq.length-1]).sort(()=>Math.random()-.5);j=0}}
+  seq.push(bag.splice(j,1)[0]);
+ }
+ return seq;
+}
+function buildRound(n){
+ const out=[],types=typeSequence(n);
+ for(let i=0;i<n;i++){
+  let it,k=0;
+  do{it=makeItem(types[i]);k++}while((seen.has(it.type+it.sentence)||globalSeen.has(it.type+it.sentence))&&k<40);
+  seen.add(it.type+it.sentence);globalSeen.add(it.type+it.sentence);out.push(it);
+ }
+ return out;
+}
+
+/* ===== Arbeitsblatt (Vorschau + Druck/PDF) ===== */
+let sheetItems=[];
+function sheetCount(){return S.count>0?S.count:20}
+function buildSheet(){
+ seen=new Set();
+ sheetItems=buildRound(sheetCount());
+ sheetItems.forEach(it=>{
+  if(it.type==='rec'){
+   const sel=S.tenses.filter(x=>x!==it.t);
+   const others=sel.length?shuffle(sel):shuffle(ORDER.filter(x=>x!==it.t));
+   it._opts=shuffle([it.t,...others.slice(0,3)]);
+  }
+ });
+}
+function openSheet(){
+ const err=document.getElementById('err');
+ if(!S.tenses.length&&S.modes.some(m=>m!=='aux'&&m!=='pp')){err.textContent=L('Wähle mindestens eine Zeitform.','Choisis au moins un temps.');return}
+ if(!S.modes.length){err.textContent=L('Wähle mindestens eine Übungsart.','Choisis au moins un type d’exercice.');return}
+ if(!S.forms.length&&S.modes.some(m=>['rec','fill','trans'].includes(m))){err.textContent=L('Wähle mindestens eine Satzart.','Choisis au moins un type de phrase.');return}
+ buildSheet();renderSheet();
+}
+function sheetTaskHtml(it,n){
+ const num=`<span class="n">${n}.</span>`;
+ const blank=w=>`<span class="blank" style="width:${w}ch"></span>`;
+ if(it.type==='rec'){
+  return `<div class="t"><div class="ins">${L('Welche Zeitform ist das? Kreuze an.','Quel temps est-ce ? Coche.')}</div>${num}${esc(it.sentence)}<div style="margin-top:4px">${it._opts.map(k=>`<span class="opt"><span class="box"></span>${T[k].name}</span>`).join('')}</div></div>`;
+ }
+ if(it.type==='fill'||it.type==='ctx'){
+  const ins=it.type==='ctx'?L('Welche Zeit passt? Setze das Verb richtig ein.','Quel temps convient ? Mets le verbe à la bonne forme.'):it.form==='q'?L('Ergänze die Frage.','Complète la question.'):it.t==='IMT'?L('Setze den Befehl richtig ein.','Mets l’ordre à la bonne forme.'):L('Setze das Verb in der richtigen Form ein.','Mets le verbe à la bonne forme.');
+  const tag=(it.type==='fill'&&(S.hint||it.t==='FC'||it.t==='FS'))?` <span class="hint">[${T[it.t].name}]</span>`:'';
+  return `<div class="t"><div class="ins">${ins}${tag}</div>${num}${esc(it.before)}${blank(Math.max(9,it.gap.length+6))}${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span></div>`;
+ }
+ if(it.type==='pp'){
+  return `<div class="t"><div class="ins">${L('Bilde das participe passé (und gleiche es wenn nötig an).','Forme le participe passé (et accorde-le si nécessaire).')}</div>${num}${esc(it.before)}${blank(Math.max(9,it.gap.length+6))}${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span></div>`;
+ }
+ if(it.type==='aux'){
+  return `<div class="t"><div class="ins">${L('Welches Hilfsverb gehört in die Lücke?','Quel auxiliaire faut-il dans la lacune ?')}</div>${num}${esc(it.before)}${blank(7)}${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span><div style="margin-top:4px"><span class="opt"><span class="box"></span>avoir</span><span class="opt"><span class="box"></span>être</span></div></div>`;
+ }
+ if(it.type==='table'){
+  return `<div class="t"><div class="ins">${L('Konjugiere','Conjugue')} <b>${esc(it.v.disp)}</b> ${L('im','au')} <b>${T[it.t].name}</b> · ${esc(it.v.de.split(',')[0])}</div>${num}<div class="tg">${it.rows.map(r=>`<div><i>${esc(r.lab)}</i><b></b></div>`).join('')}</div></div>`;
+ }
+ if(it.type==='ans'){
+  return `<div class="t"><div class="ins">${L('Antworte mit einem ganzen Satz:','Réponds par une phrase complète :')} ${it.yes?'Oui':'Non'}</div>${num}${esc(it.question)}<div class="wl"></div></div>`;
+ }
+ return `<div class="t"><div class="ins">${instrText(it)}${it.showMk?' · '+L('Signalwort','Mot-clé')+': <b>'+esc(it.mk.w)+'</b>':''}</div>${num}${esc(it.src.sentence)}<div class="wl"></div><div class="wl"></div></div>`;
+}
+function sheetSolution(it){
+ if(it.type==='rec')return T[it.t].name;
+ if(it.type==='fill'||it.type==='ctx'||it.type==='pp')return esc([it.gap,...(it.alt||[])].join(' / '));
+ if(it.type==='aux')return it.ans;
+ if(it.type==='table')return it.rows.map(r=>esc(r.lab)+' <b>'+esc(r.forms[0])+'</b>').join(' · ');
+ return esc(it.sentence);
+}
+function renderSheet(){
+ screen='sheet';
+ const names=S.tenses.map(k=>T[k].name).join(', ');
+ const title=L('Ça roule – Arbeitsblatt','Ça roule – Fiche d’exercices');
+ app.innerHTML=`
+ <div class="sheetbar">
+  <button class="btn-link" id="shBack">${L('‹ Zurück','‹ Retour')}</button>
+  <button class="secondary" id="shMix">${L('🔀 Neu mischen','🔀 Mélanger')}</button>
+  <button class="primary" id="shPrint">${L('🖨 Drucken / PDF','🖨 Imprimer / PDF')}</button>
+ </div>
+ <div class="sheet"><h1>${title}</h1><p class="sub">${esc(names)}</p>
+  <div class="meta"><span>${L('Name:','Nom :')}</span><span>${L('Datum:','Date :')}</span></div>
+  ${sheetItems.map((it,i)=>sheetTaskHtml(it,i+1)).join('')}</div>
+ <div class="sheet sol"><h1>${L('Lösungen','Corrigé')}</h1><p class="sub">${title}</p>
+  <div class="sol-list">${sheetItems.map((it,i)=>`<div><b>${i+1}.</b> ${sheetSolution(it)}</div>`).join('')}</div></div>`;
+ app.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.id==='shBack')return renderSetup();
+  if(b.id==='shMix'){buildSheet();renderSheet();window.scrollTo({top:0});return}
+  if(b.id==='shPrint')return window.print();
+ };
+ window.scrollTo({top:0});
+}
+function start(list){
+ const err=document.getElementById('err');
+ if(!list){
+  if(!S.tenses.length&&S.modes.some(m=>m!=='aux'&&m!=='pp')){err.textContent=L('Wähle mindestens eine Zeitform.','Choisis au moins un temps.');return}
+  if(!S.modes.length){err.textContent=L('Wähle mindestens eine Übungsart.','Choisis au moins un type d’exercice.');return}
+  if(!S.forms.length&&S.modes.some(m=>['rec','fill','trans'].includes(m))){err.textContent=L('Wähle mindestens eine Satzart.','Choisis au moins un type de phrase.');return}
+ }
+ seen=new Set();infinite=!list&&S.count===0;
+ items=list||buildRound(infinite?10:S.count);idx=0;score=0;results=[];
+ renderTask();
+}
+
+function tenseTag(it){return (S.hint||it.t==='FC'||it.t==='FS')?`<span class="tt" style="--c:${T[it.t].c}">${T[it.t].name}</span>`:''}
+const TA='autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"';
+const ACC=()=>`<div class="acc" id="acc">${'é è à â ê î ô û ç ë ï œ'.split(' ').map(c=>`<button type="button" data-ch="${c}">${c}</button>`).join('')}<small>${L('é und è müssen stimmen – die anderen Akzente werden nachsichtig bewertet.','é et è doivent être corrects – les autres accents sont corrigés avec indulgence.')}</small></div>`;
+function renderTask(){
+ screen='task';
+ const it=items[idx];answered=false;tries=0;
+ const TL=TYPE_LABEL_();
+ let body='',acc=true;
+ if(it.type==='rec'){
+  acc=false;
+  const sel=S.tenses.filter(x=>x!==it.t);
+  const others=sel.length?shuffle(sel):shuffle(ORDER.filter(x=>x!==it.t));
+  const opts=shuffle([it.t,...others.slice(0,3)]);
+  body=`<p class="instr">${L('Welche Zeitform ist das?','Quel temps est-ce ?')}</p>
+   <div class="sentence" id="sent">${esc(it.sentence)}</div>
+   <div class="opts">${opts.map(k=>`<button data-o="${k}">${T[k].name}</button>`).join('')}</div>`;
+ }else if(it.type==='fill'||it.type==='ctx'){
+  const w=Math.max(8,it.gap.length+3);
+  body=`<p class="instr">${it.type==='ctx'?L('Welche Zeit passt? Setze das Verb richtig ein.','Quel temps convient ? Mets le verbe à la bonne forme.'):it.form==='q'?L('Ergänze die Frage.','Complète la question.'):it.t==='IMT'?L('Setze den Befehl richtig ein.','Mets l’ordre à la bonne forme.'):L('Setze das Verb in der richtigen Form ein.','Mets le verbe à la bonne forme.')} ${it.type==='fill'?tenseTag(it):''}</p>
+   <div class="sentence">${esc(it.before)}<input class="tin" id="inp" style="width:${w}ch" ${TA}>${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span></div>`;
+ }else if(it.type==='pp'){
+  const w=Math.max(8,it.gap.length+3);
+  body=`<p class="instr">${L('Bilde das participe passé (und gleiche es wenn nötig an).','Forme le participe passé (et accorde-le si nécessaire).')}</p>
+   <div class="sentence">${esc(it.before)}<input class="tin" id="inp" style="width:${w}ch" ${TA}>${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span></div>`;
+ }else if(it.type==='aux'){
+  acc=false;
+  body=`<p class="instr">${L('Welches Hilfsverb gehört in die Lücke?','Quel auxiliaire faut-il dans la lacune ?')}</p>
+   <div class="sentence" id="sent">${esc(it.before)}<span class="blank">&nbsp;</span>${esc(it.after)} <span class="hint">(${esc(hintTxt(it.v))})</span></div>
+   <div class="opts two"><button data-a="avoir">avoir</button><button data-a="être">être</button></div>`;
+ }else if(it.type==='table'){
+  body=`<p class="instr">${L('Konjugiere','Conjugue')} <b>${esc(it.v.disp)}</b> ${L('im','au')} <span class="tt" style="--c:${T[it.t].c}">${T[it.t].name}</span> <span class="muted" style="font-weight:400">· ${esc(it.v.de.split(',')[0])}</span></p>
+   <div class="ctab">${it.rows.map((r,i)=>`<label>${esc(r.lab)}</label><input class="tin" data-i="${i}" ${TA}>`).join('')}</div>
+   ${it.t==='IMT'?'':`<p class="muted" style="font-size:.85em;margin:8px 0 0">${L('Schreibe nur die Verbform (z. B. «mange» oder «ai mangé»), bei reflexiven Verben mit me/te/se.','Écris seulement la forme verbale (p. ex. « mange » ou « ai mangé »), pour les verbes pronominaux avec me/te/se.')}</p>`}`;
+ }else if(it.type==='ans'){
+  body=`<p class="instr">${L('Antworte mit einem ganzen Satz:','Réponds par une phrase complète :')} ${it.yes?L('👍 <b>Oui</b>','👍 <b>Oui</b>'):L('👎 <b>Non</b>','👎 <b>Non</b>')}</p>
+   <div class="src">${esc(it.question)}</div>
+   <textarea class="full tin" id="inp" rows="1" placeholder="${it.yes?'Oui, …':'Non, …'}" ${TA}></textarea>`;
+ }else{
+  body=`<p class="instr">${instrText(it)}</p>
+   <div class="src">${esc(it.src.sentence)}</div>
+   ${it.showMk?`<p class="sig">${L('Signalwort','Mot-clé')}: <b>${esc(it.mk.w)}</b></p>`:''}
+   <textarea class="full tin" id="inp" rows="2" placeholder="${L('Schreib den ganzen Satz …','Écris la phrase entière …')}" ${TA}></textarea>`;
+ }
+ app.innerHTML=`
+ <div class="qtop"><button class="btn-link" id="quit">${infinite?L('✓ Fertig','✓ Terminé'):L('✕ Beenden','✕ Quitter')}</button><span>${infinite?L('Aufgabe ','Exercice ')+(idx+1)+' · ∞':(idx+1)+' / '+items.length}</span><span>⭐ ${score}</span></div>
+ ${infinite?'':`<div class="bar"><div style="width:${idx/items.length*100}%"></div></div>`}
+ <div class="card"><div class="tag">${TL[it.type]}</div>${body}
+  ${acc?ACC():''}
+  <div id="fb"></div>
+  <div class="actions">${(it.type==='rec'||it.type==='aux')?'':`<button class="primary" id="go">${L('Prüfen','Vérifier')}</button>`}</div></div>`;
+ app.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.ch)return insertCh(b.dataset.ch);
+  if(b.id==='quit'){
+   if(infinite&&results.length)return renderResults();
+   if(results.length&&!confirm(L('Runde wirklich beenden?\nDeine bisherigen Antworten gehen verloren.','Vraiment quitter ?\nTes réponses seront perdues.')))return;
+   return renderSetup();
+  }
+  if(b.dataset.o&&!answered)return answerRec(b.dataset.o);
+  if(b.dataset.a&&!answered)return answerAux(b.dataset.a);
+  if(b.id==='go')return answered?next():check();
+ };
+ const acb=document.getElementById('acc');if(acb)acb.onmousedown=e=>e.preventDefault();
+ const first=document.querySelector('.tin');if(first)first.focus();
+}
+let lastIn=null;
+document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('tin'))lastIn=e.target});
+function insertCh(ch){
+ const el=(lastIn&&document.body.contains(lastIn)&&!lastIn.disabled)?lastIn:document.querySelector('.tin:not(:disabled)');
+ if(!el)return;
+ el.focus();
+ const s=el.selectionStart==null?el.value.length:el.selectionStart,e2=el.selectionEnd==null?s:el.selectionEnd;
+ el.value=el.value.slice(0,s)+ch+el.value.slice(e2);
+ el.selectionStart=el.selectionEnd=s+ch.length;
+ el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+
+/* ===== Erklärungen ===== */
+function explain(it){
+ const d=T[it.t];
+ let h='';
+ if(it.type==='ans')h+=`<div class="rule">${L('<b>Antwort:</b> Oui, + Satz / Non, + verneinter Satz. Aus <i>tu</i> wird <i>je</i>, aus <i>vous</i> wird <i>nous</i>, aus Namen wird <i>il / elle / ils / elles</i>. Nach <b>pas</b> steht <b>de</b> statt un / une / des / du.','<b>Réponse :</b> Oui, + phrase / Non, + phrase négative. <i>tu</i> devient <i>je</i>, <i>vous</i> devient <i>nous</i>, un nom devient <i>il / elle / ils / elles</i>. Après <b>pas</b> : <b>de</b> à la place de un / une / des / du.')}</div>`;
+ if(it.why)h+=`<div class="rule"><b>${L('Warum?','Pourquoi ?')}</b> ${esc(whyT(it.why))}</div>`;
+ h+=`<div class="rule"><span class="tt" style="--c:${d.c}">${d.name}</span> ${X(d.use)}.<br><b>${L('Bildung','Formation')}:</b> ${X(d.form)}${it.form==='neg'?'<br>'+X(NEG):it.form==='q'?'<br>'+X(QQ):''}</div>`;
+ if(it.bothFut)h+=`<div class="rule">${L('<b>Beide Futurformen sind hier möglich.</b> Futur composé = nahe, geplante Zukunft; futur simple = ferne oder sichere Zukunft.','<b>Les deux futurs sont possibles ici.</b> Futur composé = futur proche, prévu ; futur simple = futur lointain ou certain.')}</div>`;
+ if(it.mk&&it.mk.w&&MK[it.t].some(m=>m.w===it.mk.w))h+=`<div class="rule"><b>${L('Signalwort','Mot-clé')}:</b> <i>${esc(it.mk.w)}</i> → ${d.name}</div>`;
+ return h;
+}
+function markSent(it){return esc(it.before)+'<mark>'+esc(it.gap)+'</mark>'+esc(it.after)}
+function errHint(it,val){
+ const u=nrm(val),v=it.v,t=it.t;
+ if(it.form==='neg'){
+  if(!/(^| )pas( |$)/.test(u))return L('Verneinung: <b>ne … pas</b> steht um das konjugierte Verb (beim passé composé um das Hilfsverb).','Négation : <b>ne … pas</b> entoure le verbe conjugué (au passé composé : l’auxiliaire).');
+  if(!/(^| )(ne|n')/.test(u))return L('<b>ne</b> (vor Vokal <b>n’</b>) fehlt.','Il manque <b>ne</b> (devant une voyelle : <b>n’</b>).');
+  if(it.ob&&it.ob.p!==it.ob.n&&u.includes(nrm(it.ob.p)))return L('Nach der Verneinung werden <b>un / une / des / du</b> zu <b>de / d’</b>.','Après la négation, <b>un / une / des / du</b> deviennent <b>de / d’</b>.');
+ }
+ if(t==='PC'&&v){
+  const av=/(^|[ '])(ai|as|a|avons|avez|ont)( |$)/.test(u),et=/(^|[ '])(suis|es|est|sommes|etes|sont)( |$)/.test(u);
+  if(v.aux==='E'&&av&&!et)return L(`<b>${v.disp}</b> bildet das passé composé mit <b>être</b>.`,`<b>${v.disp}</b> forme le passé composé avec <b>être</b>.`);
+  if(v.aux==='A'&&et&&!av)return L(`<b>${v.disp}</b> bildet das passé composé mit <b>avoir</b>.`,`<b>${v.disp}</b> forme le passé composé avec <b>avoir</b>.`);
+  if(v.aux==='E')return L('Mit <b>être</b> passt sich das Partizip dem Subjekt an (+e für feminin, +s für Plural).','Avec <b>être</b>, le participe s’accorde avec le sujet (+e au féminin, +s au pluriel).');
+  return L(`Partizip: <b>${v.pp}</b>.`,`Participe : <b>${v.pp}</b>.`);
+ }
+ if(t==='IMP')return L('Imparfait: Stamm der <b>nous</b>-Form + -ais, -ais, -ait, -ions, -iez, -aient.','Imparfait : radical de <b>nous</b> + -ais, -ais, -ait, -ions, -iez, -aient.');
+ if(t==='FS')return L('Futur simple: Infinitiv-Stamm + -ai, -as, -a, -ons, -ez, -ont (Sonderstamm: '+v.fut+'-).','Futur simple : radical de l’infinitif + -ai, -as, -a, -ons, -ez, -ont (radical : '+v.fut+'-).');
+ if(t==='CO')return L('Conditionnel: Futur-Stamm ('+v.fut+'-) + -ais, -ais, -ait, -ions, -iez, -aient.','Conditionnel : radical du futur ('+v.fut+'-) + -ais, -ais, -ait, -ions, -iez, -aient.');
+ if(t==='FC')return L('Futur composé: <b>aller</b> (Présent) + Infinitiv.','Futur composé : <b>aller</b> (présent) + infinitif.');
+ if(t==='IMT')return L('Impératif: Présent-Form ohne Pronomen; bei -er-Verben hat <i>tu</i> kein -s.','Impératif : forme du présent sans pronom ; pour les verbes en -er, <i>tu</i> perd son -s.');
+ return L('Prüfe die Endung zur Person.','Vérifie la terminaison selon la personne.');
+}
+function finish(ok,user,html,kind){
+ answered=true;if(ok)score++;
+ results.push({item:items[idx],ok,user,retry:ok&&tries>0});
+ document.getElementById('fb').innerHTML=`<div class="fb ${kind}">${html}</div>`;
+ const act=document.querySelector('.actions');
+ act.innerHTML=`<button class="primary" id="go">${(infinite||idx+1<items.length)?L('Weiter →','Suivant →'):L('Auswertung →','Résultats →')}</button>`;
+ document.querySelector('.qtop span:last-child').textContent='⭐ '+score;
+ document.querySelectorAll('.tin').forEach(x=>x.disabled=true);
+ const acb=document.getElementById('acc');if(acb)acb.remove();
+ document.getElementById('go').focus();
+}
+function answerRec(k){
+ const it=items[idx],ok=k===it.t;
+ document.querySelectorAll('.opts button').forEach(b=>{b.disabled=true;if(b.dataset.o===it.t)b.classList.add('right');else if(b.dataset.o===k)b.classList.add('wrong')});
+ document.getElementById('sent').innerHTML=markSent(it);
+ finish(ok,T[k].name,`<div class="fbt">${ok?L('Richtig! 🎉','Correct ! 🎉'):L('Leider falsch.','Dommage, c’est faux.')}</div>${ok?'':L(`Das ist <b>${T[it.t].name}</b>.<br>`,`C’est le <b>${T[it.t].name}</b>.<br>`)}${L('Erkennbar an','On le reconnaît à')}: <mark>${esc(it.gap)}</mark>${explain(it)}`,ok?'ok':'bad');
+}
+function answerAux(k){
+ const it=items[idx],ok=k===it.ans;
+ document.querySelectorAll('.opts button').forEach(b=>{b.disabled=true;if(b.dataset.a===it.ans)b.classList.add('right');else if(b.dataset.a===k)b.classList.add('wrong')});
+ document.getElementById('sent').innerHTML=markSent(it)+` <span class="hint">(${esc(hintTxt(it.v))})</span>`;
+ const why=it.v.r?L('<b>Reflexive Verben</b> bilden das passé composé immer mit <b>être</b>.','Les <b>verbes pronominaux</b> forment toujours le passé composé avec <b>être</b>.'):it.v.aux==='E'?L(`<b>${esc(it.v.disp)}</b> gehört zu den Verben der Bewegung / Zustandsänderung → <b>être</b> (Partizip passt sich an).`,`<b>${esc(it.v.disp)}</b> est un verbe de mouvement / de changement d’état → <b>être</b> (le participe s’accorde).`):L(`<b>${esc(it.v.disp)}</b> hat keine Sonderregel → <b>avoir</b> (Partizip bleibt unverändert).`,`<b>${esc(it.v.disp)}</b> n’a pas de règle particulière → <b>avoir</b> (le participe reste invariable).`);
+ finish(ok,k,`<div class="fbt">${ok?L('Richtig! 🎉','Correct ! 🎉'):L('Leider falsch.','Dommage, c’est faux.')}</div><div class="rule">${why}</div><div class="rule"><span class="tt" style="--c:${T.PC.c}">${T.PC.name}</span> ${X(T.PC.form)}</div>`,ok?'ok':'bad');
+}
+function checkTable(it){
+ const ins=[...document.querySelectorAll('.ctab .tin')];
+ if(ins.every(i=>!i.value.trim())){ins[0].focus();return}
+ let all=true;const bad=[];
+ ins.forEach((inp,i)=>{
+  const r=it.rows[i],val=inp.value.trim();
+  const ok=!!val&&r.forms.some(f=>eq(val,f));
+  inp.classList.add(ok?'rok':'rbad');
+  if(!ok){all=false;bad.push(`<div class="trow"><span>${esc(r.lab)}</span><span><s>${esc(val||'—')}</s> → <b>${esc(r.forms[0])}</b>${r.forms.length>1&&it.t==='PC'?` <small class="muted">(${esc(r.forms.slice(1).join(' / '))})</small>`:''}</span></div>`)}
+ });
+ const user=ins.map(i=>i.value.trim()).join(' · ');
+ const tip=all?'':(it.t==='PC'?`<div class="tip">💡 ${errHint({t:'PC',v:it.v,form:'pos'},'')}</div>`:`<div class="tip">💡 ${errHint({t:it.t,v:it.v,form:'pos'},'x')}</div>`);
+ finish(all,user,`<div class="fbt">${all?L('Alles richtig! 🎉','Tout est correct ! 🎉'):L('Nicht ganz.','Pas tout à fait.')}</div>${bad.join('')}${tip}${explain(it)}`,all?'ok':'bad');
+ it.rowOk=ins.map(i=>i.classList.contains('rok'));
+}
+function check(){
+ const it=items[idx];
+ if(it.type==='table')return checkTable(it);
+ const inp=document.getElementById('inp'),val=inp.value.trim();
+ if(!val){inp.focus();return}
+ const fb=document.getElementById('fb');
+ let ok=false,nomark=false,soft=false,cands;
+ if(it.type==='fill'||it.type==='ctx'||it.type==='pp'){cands=[it.gap,...(it.alt||[])];if(it.type!=='pp')cands.push(it.sentence);ok=cands.some(a=>eq(val,a))}
+ else if(it.type==='ans'){cands=it.answers;ok=cands.some(a=>eq(val,a))}
+ else{const r=checkTrans(it,val);ok=r==='ok';nomark=r==='nomark';soft=r==='soft';cands=it.vars}
+ if(!ok&&tries===0){
+  if(nomark){tries=1;fb.innerHTML=`<div class="fb warn"><div class="fbt">${L('Fast!','Presque !')}</div>${L(`Das Signalwort <b>${esc(it.mk.w)}</b> fehlt noch. Noch ein Versuch.`,`Le mot-clé <b>${esc(it.mk.w)}</b> manque encore. Encore un essai.`)}</div>`;inp.focus();return}
+  if(soft){tries=1;fb.innerHTML=`<div class="fb warn"><div class="fbt">${L('Fast!','Presque !')}</div>${L('Mach daraus eine Frage mit <b>est-ce que</b> (oder mit Inversion). Noch ein Versuch.','Fais-en une question avec <b>est-ce que</b> (ou avec l’inversion). Encore un essai.')}</div>`;inp.focus();return}
+  const ni=nearInfo(val,cands);
+  if(ni.near){tries=1;fb.innerHTML=`<div class="fb warn"><div class="fbt">${L('Fast!','Presque !')}</div>${ni.acc?L('Achte auf die Akzente: <b>é</b> und <b>è</b> müssen genau stimmen. Noch ein Versuch.','Attention aux accents : <b>é</b> et <b>è</b> doivent être exacts. Encore un essai.'):L('Prüfe die Schreibweise. Noch ein Versuch.','Vérifie l’orthographe. Encore un essai.')}</div>`;inp.focus();return}
+ }
+ let sol;
+ if(it.type==='fill'||it.type==='ctx'||it.type==='pp')sol=markSent(it)+((it.alt&&it.alt.length)?`<br><small>${L('Auch richtig','Aussi correct')}: <b>${esc(it.alt.join(' / '))}</b></small>`:'');
+ else sol='<mark>'+esc(it.sentence)+'</mark>';
+ const tip=ok?'':errHint(it,val);
+ finish(ok,val,`<div class="fbt">${ok?L('Richtig! 🎉','Correct ! 🎉'):L('Leider falsch.','Dommage, c’est faux.')}</div>
+  ${ok?'':`<div>${L('Deine Antwort','Ta réponse')}: <s>${esc(val)}</s></div>`}
+  <div class="sol">${ok?(tries?`<small>${L('(im 2. Versuch)','(au 2e essai)')}</small><br>`:''):L('Richtig ist: ','La bonne réponse : ')}${sol}</div>
+  ${tip?`<div class="tip">💡 ${tip}</div>`:''}${explain(it)}`,ok?'ok':'bad');
+}
+function next(){
+ idx++;
+ if(infinite&&idx>=items.length-2)items=items.concat(buildRound(10));
+ idx<items.length?renderTask():renderResults();
+}
+
+/* ===== Auswertung ===== */
+function taskText(r){
+ const it=r.item,YA=L('Deine Antwort','Ta réponse'),SOL=L('Lösung','Solution');
+ const you=`<small>${YA}: <span class="${r.ok?'okc':'you'}">${esc(r.user)}</span></small>`;
+ if(it.type==='rec')return `${markSent(it)}<br><small>${L('Deine Wahl','Ton choix')}: <span class="${r.ok?'okc':'you'}">${esc(r.user)}</span>${r.ok?'':` · ${L('Richtig','Correct')}: <b>${T[it.t].name}</b>`}</small>`;
+ if(it.type==='aux')return `${markSent(it)}<br><small>${L('Deine Wahl','Ton choix')}: <span class="${r.ok?'okc':'you'}">${esc(r.user)}</span>${r.ok?'':` · ${L('Richtig','Correct')}: <b>${it.ans}</b>`}</small>`;
+ if(it.type==='trans')return `<span class="muted">${esc(it.src.sentence)}</span> → ${esc(instrText(it))}<br>${SOL}: <mark>${esc(it.sentence)}</mark><br>${you}`;
+ if(it.type==='ans')return `${esc(it.question)} (${it.yes?'Oui':'Non'})<br>${SOL}: <mark>${esc(it.sentence)}</mark><br>${you}`;
+ if(it.type==='table')return `<b>${esc(it.v.disp)}</b> · ${T[it.t].name}<br>${it.rows.map(x=>esc(x.lab)+' <b>'+esc(x.forms[0])+'</b>').join(' · ')}<br>${you}`;
+ return `${markSent(it)}${it.alt&&it.alt.length?` <small>(${L('auch','aussi')}: ${esc(it.alt.join(' / '))})</small>`:''}<br>${you}`;
+}
+function renderResults(){
+ screen='results';
+ const TL=TYPE_LABEL_(),MODES=MODES_();
+ const n=results.length,pct=n?Math.round(score/n*100):0;
+ const msg=pct>=90?L('Hervorragend! 🏆','Excellent ! 🏆'):pct>=70?L('Gut gemacht! 👍','Bien joué ! 👍'):pct>=50?L('Nicht schlecht – weiter üben! 💪','Pas mal – continue à t’entraîner ! 💪'):L('Bleib dran – nochmal üben hilft! 🔁','Courage – recommence, ça aide ! 🔁');
+ const by={};results.forEach(r=>{const k=r.item.t;by[k]=by[k]||{n:0,ok:0};by[k].n++;if(r.ok)by[k].ok++});
+ const wrong=results.filter(r=>!r.ok),retry=results.filter(r=>r.retry).length;
+ const modeL=S.modes.map(k=>MODES.find(m=>m.k===k)).filter(Boolean);
+ const d=new Date(),loc=L('de-CH','fr-CH'),date=d.toLocaleDateString(loc)+', '+d.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit'});
+ app.innerHTML=`
+ <div class="card">
+  <input class="name" id="name" placeholder="${L('Dein Name','Ton prénom')}" value="${esc(studentName)}" autocomplete="off">
+  <div class="big">${score} / ${n}<small>${msg}</small></div>
+  ${retry?`<p class="center muted">${L(`davon ${retry} im 2. Versuch`,`dont ${retry} au 2e essai`)}</p>`:''}
+  <p class="center muted">${date} · ${modeL.map(m=>m.icon+' '+m.label).join(', ')} · ${S.tenses.map(k=>T[k].name).join(', ')}</p>
+  <p class="shot">${L('📸 Mach einen Screenshot, falls deine Lehrperson dein Resultat sehen will.','📸 Fais une capture d’écran si ton enseignant veut voir ton résultat.')}</p>
+ </div>
+ <div class="card"><h2>${L('Nach Zeitform','Par temps')}</h2>${ORDER.filter(k=>by[k]).map(k=>{const p=Math.round(by[k].ok/by[k].n*100);return `<div class="stat"><span>${T[k].name}</span><div class="track"><div style="width:${p}%;background:${T[k].c}"></div></div><b>${by[k].ok}/${by[k].n}</b></div>`}).join('')}</div>
+ <details class="card all">
+  <summary>${L('📋 Alle Antworten und Lösungen anzeigen','📋 Afficher toutes les réponses et solutions')} <span class="muted">(${n-wrong.length} ✓ · ${wrong.length} ✗)</span></summary>
+  ${results.map((r,i)=>`<div class="mist ${r.ok?'r-ok':'r-bad'}"><b>${i+1}. ${r.ok?'✓':'✗'}</b> <span class="tt" style="--c:${T[r.item.t].c}">${T[r.item.t].name}</span> <small class="muted">${TL[r.item.type]}${r.retry?L(' · 2. Versuch',' · 2e essai'):''}</small><br>${taskText(r)}</div>`).join('')}
+ </details>
+ <div class="btns">
+  ${wrong.length?`<button class="primary" id="redo">${L('Fehler nochmal üben','Retravailler les erreurs')}</button>`:''}
+  <button class="${wrong.length?'secondary':'primary'}" id="again">${L('Neue Runde','Nouveau tour')}</button>
+  <button class="secondary" id="setup">${L('Einstellungen ändern','Modifier les réglages')}</button>
+ </div>`;
+ document.getElementById('name').oninput=e=>{studentName=e.target.value};
+ app.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.id==='redo')start(shuffle(wrong.map(r=>r.item)));
+  if(b.id==='again')start();
+  if(b.id==='setup')renderSetup();
+ };
+}
+
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Enter'||!items.length||!document.getElementById('fb')||screen!=='task')return;
+ const it=items[idx];if(!it)return;
+ const a=document.activeElement;
+ if(answered){e.preventDefault();next();return}
+ if(a&&a.classList&&a.classList.contains('tin')){
+  e.preventDefault();
+  if(it.type==='table'){const ins=[...document.querySelectorAll('.ctab .tin')],i=ins.indexOf(a);if(i<ins.length-1)ins[i+1].focus();else check()}
+  else check();
+ }
+});
+
+/* ===== Regeln ===== */
+const modal=document.getElementById('modal');
+let modalKind='';
+function closeModal(){modal.classList.add('hidden');modalKind=''}
+modal.onclick=e=>{if(e.target===modal||e.target.closest('[data-close]'))closeModal()};
+function openRules(){
+ modalKind='rules';
+ const cards=ORDER.map(k=>{const d=T[k];return `<div class="rt"><p><span class="tt" style="--c:${d.c}">${d.name}</span></p><p>${X(d.use)}.</p><p><b>${L('Bildung','Formation')}:</b> ${X(d.form)}</p>${MK[k].length?`<p class="muted">${L('Signalwörter / Rahmen','Mots-clés / repères')}: ${MK[k].filter(m=>m.both!==false||m.w.length<30).map(m=>esc(m.w)).join(', ')}</p>`:''}<p><i>${esc(d.ex)}</i></p></div>`}).join('');
+ document.getElementById('modalBody').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${L('Regeln','Règles')}</h2><button class="btn-link" data-close>✕</button></div>
+ ${cards}
+ <div class="rt"><p><b>⚖️ avoir ou être ?</b></p><p>${L('<b>être</b> brauchen: aller, venir, arriver, partir, sortir, entrer, rentrer, rester, tomber, monter, descendre, devenir – und <b>alle reflexiven Verben</b> (se lever, se laver …). Alle anderen Verben brauchen <b>avoir</b>.','<b>être</b> avec : aller, venir, arriver, partir, sortir, entrer, rentrer, rester, tomber, monter, descendre, devenir – et <b>tous les verbes pronominaux</b> (se lever, se laver …). Tous les autres verbes prennent <b>avoir</b>.')}</p><p>${L('Mit <b>être</b> richtet sich das Partizip nach dem Subjekt: Il est allé · Elle est allée · Ils sont allés · Elles sont allées. Mit <b>avoir</b> bleibt es unverändert.','Avec <b>être</b>, le participe s’accorde avec le sujet : Il est allé · Elle est allée · Ils sont allés · Elles sont allées. Avec <b>avoir</b>, il reste invariable.')}</p></div>
+ <div class="rt"><p><b>${L('Verneinung','Négation')}</b></p><p>${X(NEG)}</p></div>
+ <div class="rt"><p><b>${L('Fragen','Questions')}</b></p><p>${X(QQ)}</p></div>
+ <div class="rt"><p><b>${L('Akzente','Accents')}</b></p><p>${L('Die Akzente <b>é</b> und <b>è</b> müssen stimmen (z. B. <i>mangé</i> ≠ <i>mange</i>, <i>préfère</i> ≠ <i>préféré</i>). Bei <b>à, â, ê, î, ô, û, ç, ë, ï</b> sind die Aufgaben nachsichtig. Unter dem Eingabefeld findest du Knöpfe für alle Akzente.','Les accents <b>é</b> et <b>è</b> doivent être corrects (p. ex. <i>mangé</i> ≠ <i>mange</i>, <i>préfère</i> ≠ <i>préféré</i>). Pour <b>à, â, ê, î, ô, û, ç, ë, ï</b>, la correction est indulgente. Sous le champ de saisie, tu trouves des boutons pour tous les accents.')}</p></div>`;
+ modal.classList.remove('hidden');modal.scrollTop=0;
+}
+document.getElementById('rulesBtn').onclick=openRules;
+
+/* ===== Verbliste ===== */
+let vq='',vf='all',vOpen='';
+const pcShow=(v,p)=>{const P=parts(v,'PC',p,['m',(p>=3?'p':'s')]),ax=P.rf?P.rf+' ':'';return v.aux==='E'?(strGrp(Object.assign(P,{rest:''}),false)+' '+v.pp+(p>=3?'(e)s':'(e)')):strGrp(P,false)};
+function conjCard(v){
+ const labs=['je','tu','il/elle/on','nous','vous','ils/elles'];
+ const blocks=ORDER.filter(t=>t!=='IMT'||v.im).map(t=>{
+  const d=T[t];
+  const rows=(t==='IMT'?[1,3,4]:[0,1,2,3,4,5]).map(p=>{
+   let f;
+   if(t==='IMT')f=impGrp(v,SUBJ.find(s=>s.p===p&&s.pr),false);
+   else if(t==='PC')f=pcShow(v,p);
+   else f=strGrp(parts(v,t,p,['m','s']),false);
+   let lab=t==='IMT'?'':labs[p];if(p===0&&t!=='IMT'&&vowel(f))lab="j'";
+   return `<div class="trow"><span>${lab}</span><span><b>${esc(f)}</b></span></div>`;
+  }).join('');
+  return `<div class="rt"><p><span class="tt" style="--c:${d.c}">${d.name}</span></p>${rows}</div>`;
+ }).join('');
+ return `<div style="display:flex;justify-content:space-between;align-items:center"><button class="btn-link" id="vback">← ${L('Verbliste','Liste')}</button><button class="btn-link" data-close>✕</button></div>
+ <h2 style="margin:6px 0 2px;font-size:20px;text-transform:none;letter-spacing:0;color:var(--ink)">${esc(v.disp)} <small class="muted" style="font-weight:400;font-size:15px">· ${esc(v.de)}</small></h2>
+ <p class="muted" style="margin:0 0 4px">${L('Hilfsverb im passé composé','Auxiliaire au passé composé')}: <b>${v.aux==='A'?'avoir':'être'}</b> · participe passé: <b>${esc(v.pp)}</b></p>
+ <div class="vgrid">${blocks}</div>`;
+}
+function vmatch(v,q){if(!q)return true;const n=nrm(q);return [v.inf,v.disp,v.de,v.pp,...v.pr].some(x=>nrm(x).includes(n))}
+function renderVerbList(){
+ const list=VERBS.filter(v=>vmatch(v,vq)&&(vf==='all'||(vf==='E'&&v.aux==='E'&&!v.r)||(vf==='A'&&v.aux==='A')||(vf==='r'&&v.r)));
+ document.getElementById('vcount').textContent=list.length+' '+L('Verben','verbes');
+ const PRON=['je','tu','il','nous','vous','ils'];
+ const sf=(v,t,p)=>{const g=strGrp(parts(v,t,p,['m','s']),false);return (p===0&&vowel(g))?"j'"+g:PRON[p]+' '+g};
+ document.getElementById('vlist').innerHTML=`<p class="muted" style="margin:6px 0 4px;font-size:14px">${L('Tippe auf ein Verb: dann siehst du alle Zeiten.','Touche un verbe pour voir tous les temps.')}</p>`+list.map(v=>`<div class="vr2" data-v="${esc(v.inf)}"><div class="vh"><b>${esc(v.disp)}</b> <span class="muted">${esc(v.de)}</span>${v.aux==='E'?' <span class="vtag e">être</span>':''}</div><div class="vf">${[0,3,5].map(p=>esc(sf(v,'PR',p))).join(' · ')}</div><div class="vf2"><span class="lb">PC</span> ${esc(strGrp(parts(v,'PC',2,['m','s']),false))} · <span class="lb">Impf</span> ${esc(sf(v,'IMP',0))} · <span class="lb">Futur</span> ${esc(sf(v,'FS',0))}</div></div>`).join('');
+}
+function openVerbs(){
+ modalKind='verbs';
+ document.getElementById('modalBody').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${L('Verbliste','Liste des verbes')}</h2><button class="btn-link" data-close>✕</button></div>
+ <div class="vtools"><input class="vsearch" id="vsearch" type="search" placeholder="${L('Suchen: aller, vais, gehen …','Chercher : aller, vais, gehen …')}" value="${esc(vq)}" autocomplete="off">
+ <div class="vrow2"><div class="seg vseg" id="vseg">${[['all',L('Alle','Tous')],['A','avoir'],['E','être'],['r',L('reflexiv','pronominal')]].map(([k,l])=>`<button data-f="${k}" class="${vf===k?'on':''}">${l}</button>`).join('')}</div><span class="vcount" id="vcount"></span></div></div>
+ <div id="vlist"></div>`;
+ modal.classList.remove('hidden');
+ renderVerbList();
+ document.getElementById('vsearch').oninput=e=>{vq=e.target.value;renderVerbList()};
+ document.getElementById('vseg').onclick=e=>{const b=e.target.closest('button');if(!b)return;vf=b.dataset.f;document.querySelectorAll('#vseg button').forEach(x=>x.classList.toggle('on',x===b));renderVerbList()};
+ document.getElementById('vlist').onclick=e=>{const r=e.target.closest('.vr2');if(!r)return;openVerbDetail(r.dataset.v)};
+}
+function openVerbDetail(inf){
+ modalKind='verbs';
+ document.getElementById('modalBody').innerHTML=conjCard(VBY[inf]);
+ document.getElementById('vback').onclick=openVerbs;
+ modal.scrollTop=0;
+}
+document.getElementById('verbsBtn').onclick=openVerbs;
+
+/* ===== Sprache & Schrift ===== */
+function applyLang(){
+ document.documentElement.lang=LANG;
+ document.querySelectorAll('#langSeg button').forEach(b=>b.classList.toggle('on',b.dataset.l===LANG));
+ document.getElementById('rulesBtn').textContent=L('📘 Regeln','📘 Règles');
+ document.getElementById('verbsBtn').textContent=L('📋 Verben','📋 Verbes');
+ document.getElementById('fsMinus').setAttribute('aria-label',L('Schrift kleiner','Texte plus petit'));
+ document.getElementById('fsPlus').setAttribute('aria-label',L('Schrift grösser','Texte plus grand'));
+ document.getElementById('foot').textContent=L('Ça roule · Französisch Oberstufe','Ça roule · Français, degré secondaire');
+}
+document.getElementById('langSeg').onclick=e=>{
+ const b=e.target.closest('button');if(!b||b.dataset.l===LANG)return;
+ LANG=b.dataset.l;try{localStorage.setItem('cr-lang',LANG)}catch(err){}
+ applyLang();
+ if(screen==='setup')renderSetup();
+ else if(screen==='results')renderResults();
+ else if(screen==='task'&&!answered){const vals=[...document.querySelectorAll('.tin')].map(x=>x.value);renderTask();document.querySelectorAll('.tin').forEach((x,i)=>{if(vals[i])x.value=vals[i]})}
+ if(modalKind==='rules')openRules();else if(modalKind==='verbs')openVerbs();
+};
+applyLang();
+const FS=[0.85,1,1.15,1.3,1.5,1.7];let fsi=1;
+try{const v=+localStorage.getItem('cr-fs');if(v>=0&&v<FS.length)fsi=v}catch(e){}
+function applyFs(){document.body.style.zoom=FS[fsi];document.getElementById('fsMinus').disabled=fsi===0;document.getElementById('fsPlus').disabled=fsi===FS.length-1;try{localStorage.setItem('cr-fs',fsi)}catch(e){}}
+document.getElementById('fsMinus').onclick=()=>{if(fsi>0){fsi--;applyFs()}};
+document.getElementById('fsPlus').onclick=()=>{if(fsi<FS.length-1){fsi++;applyFs()}};
+applyFs();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('../../sw.js').catch(()=>{}))}
+const app=document.getElementById('app');
+renderSetup();
+</script>
+<script>
+/* Feedback: öffnet das anonyme Tally-Formular (App, Version und Gerät werden mitgegeben, keine Personendaten) */
+function openAppFeedback(){var q=new URLSearchParams({app:'caroule',version:'1.2',geraet:(navigator.userAgent||'').slice(0,120)});window.open('https://tally.so/r/GeR9re?'+q.toString(),'_blank','noopener');}
+</script>
+</body>
+</html>
