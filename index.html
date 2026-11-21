@@ -167,6 +167,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:24px}
       <button class="fs" id="fsPlus" aria-label="A+">A+</button>
       <button class="btn-link" id="rulesBtn">📘 Regeln</button>
       <button class="btn-link" id="verbsBtn">📋 Verben</button>
+      <button class="btn-link" id="feedbackBtn" onclick="openAppFeedback()">💬 Feedback</button>
     </div>
   </header>
   <main id="app"></main>
@@ -1084,6 +1085,10 @@ applyFs();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 const app=document.getElementById('app');
 renderSetup();
+</script>
+<script>
+/* Feedback: öffnet das anonyme Tally-Formular (App, Version und Gerät werden mitgegeben, keine Personendaten) */
+function openAppFeedback(){var q=new URLSearchParams({app:'caroule',version:'2026-11-21',geraet:(navigator.userAgent||'').slice(0,120)});window.open('https://tally.so/r/GeR9re?'+q.toString(),'_blank','noopener');}
 </script>
 </body>
 </html>
