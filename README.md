@@ -8,6 +8,9 @@ Live: https://novarion-desk.github.io/caroule/
 ## Arbeitsblatt
 Auf dem Einstellungsbildschirm erstellt «🖨 Arbeitsblatt» aus den gewählten Zeitformen, Übungsarten, Satzarten und der Anzahl (∞ = 20) ein A4-Blatt mit Name/Datum und Schreibplatz. Erst Vorschau, dann Drucken / PDF; «Neu mischen» erzeugt ein anderes Blatt. Das Lösungsblatt ist immer dabei.
 
+## Neu in 1.5 (25.11.2026)
+- Offline nutzbar: Die App wird beim ersten Öffnen zwischengespeichert (`sw.js`) und läuft danach auch ohne Netz. Mit Netz kommt immer die neueste Version. Nur «💬 Feedback» braucht Netz.
+
 ## Neu in 1.4 (22.11.2026)
 - Plus-que-parfait als neue Zeitform (alle Übungsarten, Regeln, Verbliste)
 - 15 weitere unregelmässige Verben (croire, rire, vivre, suivre, recevoir, conduire, offrir, rendre, tenir, revenir, mourir, naître, peindre, sentir, servir)
@@ -17,6 +20,7 @@ Auf dem Einstellungsbildschirm erstellt «🖨 Arbeitsblatt» aus den gewählten
 - «💡 Endungen anzeigen» als Hilfe bei Einsetzen, Umformen, Tabelle und Lückentext
 
 ## Versionen
+- 1.5 (25.11.2026): offline nutzbar
 - 1.4 (22.11.2026): siehe oben
 - 1.3 (21.11.2026): Zurück-Geste geht einen Schritt zurück statt die App zu schliessen – `versions/v1.3/`
 - 1.2 (21.11.2026): «Zeit wählen» mit über 100 zusätzlichen Kontext-Sätzen (jetzt 140) – `versions/v1.2/`
